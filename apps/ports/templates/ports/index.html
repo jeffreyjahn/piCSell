@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>piCSell</title>
+    <!-- Latest compiled jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
+    <script src="{% static 'ports/js/app.js' %}"></script>
+</head>
+<body>
+    <div class="container-fluid wrapper">
+            <!-- Adding main logo and company name -->
+        <div class="main_header">
+            <p class="head_logo">piCSell</p>
+            <!-- add images and other cool things  -->
+            <a href="/">Home</a>
+            <a href="/start">Login/Register</a>
+        </div>
+        <div class="main_body">
+            <div id="index_logo">
+                <img src="/media/logo.png" alt="" id="logo">
+                <h4>Information to input about the app</h4>
+                <a href="/start"><button>Start</button></a>
+            </div>
+            <!-- information boxes -->
+            <div class="info_boxes">
+                <h4 class="info_title">Photographers</h4>
+                <p class="info_content">Hire photographers to help take beautiful shots for your next project!</p>
+            </div>
+            <div class="info_boxes">
+                <h4 class="info_title">Models</h4>
+                <p class="info_content">Hire models to help frame your shot and market your products!</p>
+            </div>
+            <div class="info_boxes">
+                <h4 class="info_title">Clients</h4>
+                <p class="info_content">Connect with clients who need your photography skills or modeling capabilities!</p>
+            </div>
+            <div class="info_boxes">
+                <h4 class="info_title">Purchase Prints</h4>
+                <p class="info_content">Browse photographer's portfolios and purchase prints!</p>
+            </div>
+            <div class="info_boxes">
+                <h4 class="info_title">Connect with other creatives!</h4>
+                <p class="info_content">Join a </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

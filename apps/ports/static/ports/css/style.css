@@ -1,0 +1,41 @@
+.wrapper{
+    margin: 0 auto;
+    text-align: center;
+}
+.text-align-center{
+    margin: 0 auto;
+}
+.main_header{
+    background-color:#cfb4de;
+    color: white;
+}
+.head_logo{
+    display: inline-block;
+}
+.right-side{
+    text-align: right;
+    margin-left: 800px;
+}
+.info_boxes{
+    margin-top: 40px;
+    border: #cfb4de solid 2px;
+    width: 15%;
+    display: inline-block;
+    vertical-align: top;
+    height: 200px;
+}
+.info_title{
+    margin-top: 0;
+    background-color: #cfb4de;
+    color: white;
+    height:40px;
+}
+#logo{
+    width: 600px;
+}
+td{
+    text-align: left !important;
+}
+.profile_pic{
+    border-radius: 50% !important;
+}

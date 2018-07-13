@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Main</title>
+    <!-- Latest compiled jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
+    <script src="{% static 'ports/js/app.js' %}"></script>
+</head>
+<body>
+    <div class="container-fluid wrapper">
+        <!-- Header -->
+        <div class="main_header">
+            <p class="head_logo">piCSell | </p>
+            <!-- add images and other cool things  -->
+            <a href="/main" class="left-side">Home</a>
+            <a href="/logout" class="right-side">Log Out</a>
+        </div>
+        <!-- main content -->
+        <div class="main_content">
+            <div class="main">
+                <h1>{{photo.title}}</h1>
+                <table>
+                    <tr>
+                        <td>Uploader: </td>
+                        <td>{{photo.uploader.name}}</td>
+                    </tr>
+                    <tr>
+                        <td>Email: </td>
+                        <td>{{photo.uploader.email}}</td>
+                    </tr>
+                </table>
+                <button>add to cart</button>
+                <div class="main_image">
+                    <img src="{{photo.image_port.url}}" alt="media/default.jpg">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

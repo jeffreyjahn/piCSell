@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>piCSell | Main</title>
+    <!-- Latest compiled jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
+    <script src="{% static 'ports/js/app.js' %}"></script>
+</head>
+<body>
+    <div class="container-fluid wrapper" id="tupac">
+        <!-- Header -->
+        <div class="main_header">
+            <p class="head_logo">piCSell</p>
+            <!-- add images and other cool things  -->
+            <a href="/main">Home</a>
+            <a href="/portfolio/{{user.id}}">Portfolio</a>
+            <a href="/logout">Log Out</a>
+        </div>
+        <!-- main content -->
+        <div class="main_content">
+            <div class="main">
+                {% if user.user_level == 9 %}
+                    <h1>Welcome Admin: {{user.username}}</h1>
+                    <a href="/edit_user"><button>Edit Profile</button></a>
+                    <a href="/manage_users"><button>Manage Users</button></a>
+                {% else %}
+                <h1>Welcome {{user.username}}</h1>
+                {% if user.profile_pic_thumb.url != null %}
+                    <img src="{{user.profile_pic_thumb.url}}" class="profile_pic">
+                {% endif %}
+                <div class="main-info">
+                    <table>
+                        <tr>
+                            <td>Name: </td>
+                            <td>{{user.name}}</td>
+                        </tr>
+                        <tr>
+                            <td>Email: </td>
+                            <td>{{user.email}}</td>
+                        </tr>
+                    </table>
+                </div>
+                <a href="/edit_user"><button>Edit Profile</button></a>
+                <a href="/users/{{user.id}}"><button>See My Profile</button></a>
+                {% endif %}
+            </div>
+            {% if user.user_level < 2 %}
+            <div class="portfolio_items">
+                <a href="/portfolio/{{user.id}}"><h3 class="content-titles">My Portfolio</h3></a>
+                <div class="port_image">
+
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        </div>
+        <div>
+            <h2>See Plans</h2>
+            <table>
+                <tr>
+                    <th>Plan Name</th>
+                    <th>Host</th>
+                    <th>Date</th>
+                    <th>City</th>
+                    <th>State</th>
+                </tr>
+                {% for plan in plans %}
+                <tr>
+                    <td><a href="/plans/{{ plan.id }}">{{ plan.name }}</a></td>
+                    <td><a href="/users/{{plan.host.id}}">{{ plan.host.name }}</a></td>
+                    <td>{{ plan.date }}</td>
+                    <td>{{ plan.city }}</td>
+                    <td>{{ plan.state }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div>
+            <h2>My Plans</h2>
+            <table>
+                <tr>
+                    <th>Plan Name</th>
+                    <th>Date</th>
+                    <th>City</th>
+                    <th>State</th>
+                </tr>
+                {% for plan in my_plans %}
+                <tr>
+                    <td><a href="/plans/{{ plan.id }}">{{ plan.name }}</a></td>
+                    <td>{{ plan.date }}</td>
+                    <td>{{ plan.city }}</td>
+                    <td>{{ plan.state }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <h2>Create Plan</h2>
+        <div class="error">
+            {% if messages %}
+            <ul id="messages">
+                {% for message in messages %}
+                <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
+                {% endfor %}
+            </ul>  
+            {% endif %}
+        </div>
+        <div class="text-error">
+        <!-- add-form -->
+        <form action="/plans/new" method='post' enctype="multipart/form-data">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <td>Name:</td>
+                    <td><input type="text" name="name" placeholder="Name"></td>
+                </tr>
+                <tr>
+                    <td>Description: </td>
+                    <td><input type="text" name="description"  placeholder="Description"></td>
+                </tr>                
+                <tr>
+                    <td>Date: </td>
+                    <td><input type="datetime-local" name="date"></td>
+                </tr>
+                <tr>
+                    <td>Zipcode: </td>
+                    <td><input type="text" name="zipcode"  placeholder="ZipCode"></td>
+                </tr>
+                <tr>
+                    <td>City: </td>
+                    <td><input type="text" name="city" placeholder="City"></td>
+                </tr>
+                <tr>
+                    <td>State: </td>
+                    <td><input type="text" name="state" placeholder="state"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button type="submit">Create</button></td>
+                </tr>
+            </table>
+        </form>
+        <!-- group shiz -->
+        <div>
+            <h2>See Groups</h2>
+            <table>
+                <tr>
+                    <th>Group Name</th>
+                    <th>Creator</th>
+                    <th>Description</th>
+                    <th>Members</th>
+                    <th>Tags</th>
+                </tr>
+                {% for group in groups %}
+                <tr>
+                    <td><a href="/groups/{{ group.id }}">{{ group.name }}</a></td>
+                    <td><a href="/users/{{group.creator.id}}">{{ group.creator.name }}</a></td>
+                    <td>{{ group.description }}</td>
+                    <td>
+                        {% for member in group.members.all %}
+                            <a href="/users/{{member.id}}">{{ member.name }}</a> &nbsp;
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for tag in group.tags %}
+                            {{ tag.content }} &nbsp;
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div>
+            <h2>My Groups</h2>
+            <table>
+                <tr>
+                    <th>Group Name</th>
+                    <th>Creator</th>
+                    <th>Description</th>
+                    <th>Members</th>
+                    <th>Tags</th>
+                </tr>
+                {% for group in my_groups %}
+                <tr>
+                    <td><a href="/groups/{{ group.id }}">{{ group.name }}</a></td>
+                    <td><a href="/users/{{group.creator.id}}">{{ group.creator.name }}</a></td>
+                    <td>{{ group.description }}</td>
+                    <td>
+                        {% for member in group.members.all %}
+                            <a href="/users/{{member.id}}">{{ member.name }}</a> &nbsp;
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for tag in group.tags %}
+                            {{ tag.content }} &nbsp;
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <h2>Create Group</h2>
+        <div class="error">
+            {% if messages %}
+            <ul id="messages">
+                {% for message in messages %}
+                <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
+                {% endfor %}
+            </ul>  
+            {% endif %}
+        </div>
+        <!-- add-form -->
+        <form action="/groups/new" method='post' enctype="multipart/form-data">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <td>Name:</td>
+                    <td><input type="text" name="name" placeholder="Name"></td>
+                </tr>
+                <tr>
+                    <td>Description: </td>
+                    <td><input type="text" name="description"  placeholder="Description"></td>
+                </tr>                
+                <tr>
+                    <td>Tags (please separate with commas): </td>
+                    <td><input type="text" name="tag"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button type="submit">Create</button></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Main</title>
+    <!-- Latest compiled jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
+    <script src="{% static 'ports/js/app.js' %}"></script>
+</head>
+<body>
+    <div class="container-fluid wrapper">
+        <!-- Header -->
+        <div class="main_header">
+            <p class="head_logo">piCSell</p>
+            <!-- add images and other cool things  -->
+            <a href="/main">Home</a>
+            <a href="/logout">Log Out</a>
+        </div>
+        <!-- main content -->
+        <div class="main_content">
+            <div class="main">
+                <h1>{{user.username}}</h1>
+                {% if user.profile_pic_thumb.url != null %}
+                    <img src="{{user.profile_pic_thumb.url}}" class="profile_pic">
+                {% endif %}
+                <table>
+                    <tr>
+                        <td>Name: </td>
+                        <td>{{user.name}}</td>
+                    </tr>
+                    <tr>
+                        <td>Email: </td>
+                        <td>{{user.email}}</td>
+                    </tr>
+                </table>
+            </div>
+            {% if user.id != request.session.id  %}
+                {% if my_plans_exclude.exists == True %}
+                <h3>Add {{user.name}} to your plans!</h3>
+                <form action="/plans/add/{{user.id}}" method="post">
+                    {% csrf_token %}
+                    <select name="add_plan">
+                    {% for plan in my_plans_exclude %}
+                        <option value="{{plan.id}}">{{ plan.name }}</option>
+                    {% endfor %}
+                    </select>
+                    <input type="submit" value="Add to Plan"/>
+                </form>
+                {% endif %}
+                {% if my_plans_include.exists == True %}
+                <h3>Your plans that include {{user.name}}</h3>
+                <form action="/plans/remove/{{user.id}}" method="post">
+                    {% csrf_token %}
+                    <select name="remove_plan">
+                    {% for plan in my_plans_include %}
+                        <option value="{{plan.id}}">{{ plan.name }}</option>
+                    {% endfor %}
+                    </select>
+                    <input type="submit" value="Remove from Plan"/>
+                </form>
+                {% endif %}
+            {% endif %}
+            <div class="portfolio_items">
+                <h3>{{user.username}}'s Portfolio</h3>
+
+                {% for photo in portfolio %}
+                    <div class="port_image">
+                        <img src="{{photo.image_port.url}}">
+                        <a href="/photo/{{photo_id}}">Buy!</a>
+                    </div>
+                {% endfor%}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

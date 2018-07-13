@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin | Manage Users</title>
+    <!-- Latest compiled jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
+    <script src="{% static 'ports/js/app.js' %}"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <div class="main_header">
+            <p class="head_logo">piCSell</p>
+            <!-- add images and other cool things  -->
+            <a href="/main">Home</a>
+            <a href="/logout">Log Out</a>
+        </div>
+        <!-- main content -->
+        <div class="main_content">
+                <h1>Manage Users</h1>
+                <table class="admin_table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Date Created</th>
+                        <th>User Level</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{user.id}}</td>
+                            <td>{{user.name}}</td>
+                            <td>{{user.username}}</td>
+                            <td>{{user.email}}</td>
+                            <td>{{user.created_on}}</td>
+                            <td>{{user.user_level}}</td>
+                            <td>
+                                <a href="/edit_admin/{{user.id}}">Edit</a>
+                                <a href="/delete_user/{{user.id}}">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="portfolio_items">
+                <div class="port_image">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
