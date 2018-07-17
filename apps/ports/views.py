@@ -7,6 +7,7 @@ from django.db.models import Q
 from models import *
 import bcrypt
 
+allStates=["AL", "AK", "AR", "AZ", "CA","CO","CT","DE","FL","GA","HI","IA","ID","IL","IN","KS","KY","LA","MA","ME","MD","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VA","VT","WA","WI","WV","WY"]
 # Create your views here.
 def index(request):
     if 'id' in request.session:
@@ -16,7 +17,10 @@ def index(request):
 def start(request):
     if 'id' in request.session:
         redirect('/main')
-    return render(request, 'ports/start.html')
+    context={
+        'all_states': allStates,
+    }
+    return render(request, 'ports/start.html',context)
 
 def process(request, action):
     if request.method !="POST":
@@ -50,8 +54,11 @@ def process(request, action):
 def main(request):
     if not 'id' in request.session:
         return redirect('/')
+    user = User.objects.get(id=request.session['id'])
+    my_bday = user.birthday.strftime("%Y-%m-%d")
     context = {
-        'user' : User.objects.get(id=request.session['id']),
+        'user' : user,
+        'bday' : my_bday,
         'photographers': User.objects.filter(Q(user_level=1) & ~Q(id=request.session['id'])),
         'models': User.objects.filter(Q(user_level=2) & ~Q(id=request.session['id'])),
         'clients': User.objects.filter(Q(user_level=3) & ~Q(id=request.session['id'])),
@@ -59,17 +66,10 @@ def main(request):
         'my_plans': Plan.objects.filter(host_id=request.session['id']),
         'today': datetime.now(),
         'groups':Group.objects.exclude(members__id=request.session['id']),
-        'my_groups': Group.objects.filter(members__id=request.session['id'])
+        'my_groups': Group.objects.filter(members__id=request.session['id']),
+        'all_states': allStates,
     }
     return render(request, 'ports/main.html', context)
-
-def edit_user(request):
-    if not 'id' in request.session:
-        return redirect('/')
-    context = {
-        'user' : User.objects.get(id=request.session['id']),
-    }
-    return render(request, 'ports/edit_user.html', context)
 
 def edit_user_process(request):
     if request.method !="POST":
@@ -169,7 +169,7 @@ def users(request, id):
         'my_plans_exclude': Plan.objects.filter(host_id=request.session['id']).exclude(members__id=user.id),
         'my_plans_include': Plan.objects.filter(Q(host_id=request.session['id']) & Q(members__id=user.id)),
         'user': user,
-        'portfolio': User.objects.get(id=id).uploaded_photos.all()[:2],
+        'portfolio': User.objects.get(id=id).uploaded_photos.all(),
     }
     return render(request, 'ports/users.html', context)
 
@@ -219,6 +219,8 @@ def new_plan(request):
     new_date = datetime.strptime(dumb_date, "%Y-%m-%d %H:%M")
     b = Plan.objects.create(name=request.POST['name'], description=request.POST['description'], date = new_date, city=request.POST['city'], state=request.POST['state'], zipcode=request.POST['zipcode'], host=a)
     b.save()
+    b.members.add(a)
+    b.save()
     return redirect('/main')
 
 def show_plan(request, id):
@@ -232,6 +234,11 @@ def show_plan(request, id):
     
 def edit_plan_process(request, id):
     if request.method !="POST":
+        return redirect('/plans/'+id)
+    errors = Plan.objects.plan_validator(request.POST)
+    if len(errors):
+        for tag, error in errors.iteritems():
+            messages.error(request, error, extra_tags=tag)
         return redirect('/plans/'+id)
     this_plan = Plan.objects.get(id=id)
     if request.session['id'] == this_plan.host.id:
@@ -264,25 +271,45 @@ def remove_from_plan_process(request, id):
     this_plan.save()
     return redirect('/users/'+id)
 
+def delete_plan(request, id):
+    this_plan= Plan.objects.get(id=id)
+    if this_plan.host.id != request.session['id']:
+        return redirect('/plans/'+id)
+    this_plan.members.clear()
+    this_plan.delete()
+    return redirect('/main')
+
+
 def new_group(request):
     if request.method !="POST":
         return redirect('/main')
+    errors = Group.objects.group_validator(request.POST)
+    if len(errors):
+        for tag, error in errors.iteritems():
+            messages.error(request, error, extra_tags=tag)
+        return redirect('/main')
     me = User.objects.get(id=request.session['id'])
-    this_group = Group.objects.create(name=request.POST['name'], description=request.POST['description'], tags=request.POST['tag'], creator = me)
+    this_group = Group.objects.create(name=request.POST['name'], description=request.POST['description'], creator = me)
     this_group.members.add(me)
     this_group.save()
-    return redirect('/groups/'+this_group.id)
+    return redirect('/groups/'+str(this_group.id))
 
 def show_group(request, id):
     if not 'id' in request.session:
         return redirect('/')
     context={
-        group: Group.objects.get(id=id),
+        'user': User.objects.get(id=request.session['id']),
+        'group': Group.objects.get(id=id),
     }
     return render(request, 'ports/show_group.html', context)
 
 def edit_group_process(request,id):
     if request.method !="POST":
+        return redirect('/groups/'+id)
+    errors = Group.objects.group_validator(request.POST)
+    if len(errors):
+        for tag, error in errors.iteritems():
+            messages.error(request, error, extra_tags=tag)
         return redirect('/groups/'+id)
     this_group=Group.objects.get(id=id)
     if request.session['id'] != this_group.creator.id:
@@ -295,7 +322,7 @@ def edit_group_process(request,id):
 def join_group(request, id):
     this_group = Group.objects.get(id=id)
     me = User.objects.get(id=request.session['id'])
-    if this_group.members_set.filter(id=me.id).exists():
+    if this_group.members.filter(id=me.id).exists():
         print ("already joined")
     else:
         this_group.members.add(me)

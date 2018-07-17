@@ -36,100 +36,51 @@
             {% endif %}
         </div>
         <div class="edit_main">
-            <h2>{{user.name}}</h2>
-            <!-- add-form -->
-            <h3>Edit Profile</h3>
-            <form action="/edit_user/process" method='post' enctype="multipart/form-data">
+            <h2>{{plan.name}}</h2>
+            <p>{{ plan.description }}</p>
+            <ul>
+            {% for member in plan.members.all %}
+                <li><a href="/users/{{ member.id }}">{{member.name}}</a></li>
+            {% endfor %}
+            </ul>
+            <!-- edit-form -->
+            {% if plan.host.id == request.session.id %}
+            <h3>Edit Plan</h3>
+            <form action="/plans/new" method='post'>
                 {% csrf_token %}
                 <table>
                     <tr>
                         <td>Name:</td>
-                        <td><input type="text" name="name" value="{{user.name}}"></td>
+                        <td><input type="text" name="name" value="{{plan.name}}"></td>
                     </tr>
                     <tr>
-                        <td>Username: </td>
-                        <td><input type="text" name="username" value="{{user.username}}"></td>
-                    </tr>
-                    <tr>
-                        <td>Email: </td>
-                        <td><input type="email" name="email" value="{{user.email}}"></td>
+                        <td>Description: </td>
+                        <td><input type="text" name="description"  value="{{plan.description}}"></td>
                     </tr>                
                     <tr>
-                        <td>Birthday: </td>
-                        <td><input type="date" name="bday" value="{{user.birthday}}"></td>
+                        <td>Date: </td>
+                        <td><input type="datetime-local" name="date"></td>
                     </tr>
                     <tr>
                         <td>Zipcode: </td>
-                        <td><input type="text" name="zipcode" value="{{user.zipcode}}"></td>
+                        <td><input type="text" name="zipcode"  value="ZipCode"></td>
                     </tr>
                     <tr>
                         <td>City: </td>
-                        <td><input type="text" name="city" value="{{user.city}}"></td>
+                        <td><input type="text" name="city" value="City"></td>
                     </tr>
                     <tr>
                         <td>State: </td>
-                        <td><input type="text" name="state" value="{{user.state}}"></td>
+                        <td><input type="text" name="state" value="state"></td>
                     </tr>
-                    {% if user.user_level < 9 %}
-                    <tr>
-                        <td>Position:</td>
-                        <td>
-                            <select required="required" name="position" >
-                                <option value="1" {% if user.user_level == 1 %}selected="selected"{%endif%}>Photographer</option>
-                                <option value="2" {% if user.user_level == 2 %}selected="selected"{%endif%}>Model</option>
-                                <option value="3" {% if user.user_level == 3 %}selected="selected"{%endif%}>Client</option>
-                            </select>
-                        </td>
-                    </tr>
-                    {% endif %}
                     <tr>
                         <td></td>
-                        <td></td>
-                        <td><button type="submit">Update</button></td>
+                        <td><button type="submit">Edit</button></td>
                     </tr>
                 </table>
             </form>
-            <h3>Edit Profile Picture</h3>
-            <form action="/edit_profile_pic/process" method='post' enctype="multipart/form-data">
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <td>Profile Picture:</td>
-                        <td>
-                            <input type="file" name="prof_pic" id="form_prof_pics">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td><button type="submit">Update</button></td>
-                    </tr>
-                </table>
-            </form>
-            <h3>Edit password</h3>
-            <form action="/edit_pw/process" method='post'>
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <td>Old Password:</td>
-                        <td><input type="password" name="pw"></td>
-                    </tr>
-                    <tr>
-                        <td>New password: </td>
-                        <td><input type="password" name="new_pw"></td>
-                        <td>*Password should be at least 8 characters</td>
-                    </tr>
-                    <tr>
-                        <td>Confirm Password:</td>
-                        <td><input type="password" name="new_pw_confirm"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td><button type="submit">Update</button></td>
-                    </tr>
-                </table>
-            </form>
+            <a href="/plans/{{plan.id}}/delete"><button>Delete Plan</button></a>
+            {% endif %}
         </div>
     </div>
 </body>

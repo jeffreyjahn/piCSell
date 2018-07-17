@@ -10,8 +10,7 @@ import uuid
 import os
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
-# from localflavor.us import models as usmodels
-
+import requests, json
 # Create your models here.
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]+$')
 
@@ -32,12 +31,22 @@ class MainManager(models.Manager):
             errors["email_exists"] = "Email already exists."        
         if User.objects.filter(username = postData["username"]):
             errors["username_exists"] = "Username already exists."
+        if len(postData['address']) <1:
+            errors['address_issue'] = "Enter a valid address."
         if len(postData['zipcode']) != 5:
             errors["zipcode_issue"] = "Enter a valid zipcode."
         if len(postData['city']) < 1:
             errors["city_missing"] = "City should not be blank."
         if len(postData['state']) < 1:
             errors["state_missing"] = "State should not be blank."
+        maps_url = 'https://maps.googleapis.com/maps/api/geocode/json?address={},+{},+{}&key=AIzaSyCgUgWi-8U3WvIONYaymBWSv59MKD-M_Ik'.format(postData['address'].replace(" ","+"), postData['city'].replace(" ", "+"), postData['state'])
+        print maps_url
+        req = requests.get(maps_url)
+        # print req
+        real_address = json.loads(req.content.decode('utf-8'))
+        # print real_address['results'][0]['partial_match']
+        if 'partial_match' in real_address['results'][0]:
+            errors["notrealAddress"] = "Address is not valid."
         if len(postData['bday']) == 0:
             errors["no_bday"] = "Enter a valid date."
         else:
@@ -72,8 +81,16 @@ class MainManager(models.Manager):
             errors["city_missing"] = "City should not be blank."
         if len(postData['state']) < 1:
             errors["state_missing"] = "State should not be blank."
+        maps_url = 'https://maps.googleapis.com/maps/api/geocode/json?address={},+{},+{}&key=AIzaSyCgUgWi-8U3WvIONYaymBWSv59MKD-M_Ik'.format(postData['address'].replace(" ","+"), postData['city'].replace(" ", "+"), postData['state'])
+        print maps_url
+        req = requests.get(maps_url)
+        # print req
+        real_address = json.loads(req.content.decode('utf-8'))
+        # print real_address['results'][0]['partial_match']
+        if 'partial_match' in real_address['results'][0]:
+            errors["notrealAddress"] = "Address is not valid."
         original_email = User.objects.get(email=postData['email']).email
-        if postData != original_email and len(User.objects.filter(email=postData["email"])) > 1:
+        if postData['email'] != original_email and len(User.objects.filter(email=postData["email"])) > 1:
             errors["email_exists"] = "Email already exists."        
         if User.objects.filter(Q(username = postData["username"]) & ~Q(id=session['id'])):
             errors["username_exists"] = "Username already exists."
@@ -123,6 +140,14 @@ class MainManager(models.Manager):
             errors["city_missing"] = "City should not be blank."
         if len(postData['state']) < 1:
             errors["state_missing"] = "State should not be blank."
+        maps_url = 'https://maps.googleapis.com/maps/api/geocode/json?address={},+{},+{}&key=AIzaSyCgUgWi-8U3WvIONYaymBWSv59MKD-M_Ik'.format(postData['address'].replace(" ","+"), postData['city'].replace(" ", "+"), postData['state'])
+        print maps_url
+        req = requests.get(maps_url)
+        # print req
+        real_address = json.loads(req.content.decode('utf-8'))
+        # print real_address['results'][0]['partial_match']
+        if 'partial_match' in real_address['results'][0]:
+            errors["notrealAddress"] = "Address is not valid."
         if len(postData['date']) == 0:
             errors["no_date"] = "Enter a valid date."
         else:
@@ -143,6 +168,7 @@ class User(models.Model):
     email = models.CharField(max_length = 255)
     password = models.CharField(max_length = 255)
     birthday = models.DateField()
+    address = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=2)
     zipcode = models.IntegerField()
@@ -150,7 +176,7 @@ class User(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
-    profile_pic = models.ImageField(upload_to=user_directory_path_profile, null=True)
+    profile_pic = models.ImageField(upload_to=user_directory_path_profile)
     profile_pic_thumb = ImageSpecField(source = 'profile_pic', processors=[ResizeToFill(300, 299)], format='JPEG', options={'quality':100})
     
     objects = MainManager()
@@ -203,6 +229,7 @@ class Plan(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(max_length=500)
     date = models.DateTimeField()
+    address = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=2)
     zipcode = models.IntegerField()

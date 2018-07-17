@@ -16,14 +16,14 @@
     <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
     <script src="{% static 'ports/js/app.js' %}"></script>
 </head>
-<body>
-    <div class="container-fluid wrapper" id="tupac">
+<body id="tupac">
+    <div class="container-fluid wrapper">
         <!-- Header -->
         <div class="main_header">
             <p class="head_logo">piCSell</p>
             <!-- add images and other cool things  -->
             <a href="/main">Home</a>
-            <a href="/portfolio/{{user.id}}">Portfolio</a>
+            <a href="/users/{{user.id}}">Profile</a>
             <a href="/logout">Log Out</a>
         </div>
         <!-- main content -->
@@ -34,11 +34,17 @@
                     <a href="/edit_user"><button>Edit Profile</button></a>
                     <a href="/manage_users"><button>Manage Users</button></a>
                 {% else %}
-                <h1>Welcome {{user.username}}</h1>
-                {% if user.profile_pic_thumb.url != null %}
-                    <img src="{{user.profile_pic_thumb.url}}" class="profile_pic">
-                {% endif %}
+                <div>
+                    <h1>Welcome {{user.username}} </h1>
+                    <p>{{user.profile_pic.thumb.url}}</p>
+                        {% if user.profile_pic_thumb %}
+                            <img src="{{user.profile_pic_thumb.url}}" class="profile_pic">
+                        {% else %}
+                            <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic">
+                        {% endif %}
+                </div>
                 <div class="main-info">
+                    <a href="/users/{{user.id}}"><button>See My Profile</button></a>
                     <table>
                         <tr>
                             <td>Name: </td>
@@ -49,19 +55,10 @@
                             <td>{{user.email}}</td>
                         </tr>
                     </table>
+                    
                 </div>
-                <a href="/edit_user"><button>Edit Profile</button></a>
-                <a href="/users/{{user.id}}"><button>See My Profile</button></a>
                 {% endif %}
             </div>
-            {% if user.user_level < 2 %}
-            <div class="portfolio_items">
-                <a href="/portfolio/{{user.id}}"><h3 class="content-titles">My Portfolio</h3></a>
-                <div class="port_image">
-
-                </div>
-            </div>
-            {% endif %}
         </div>
 
         </div>
@@ -91,6 +88,7 @@
             <table>
                 <tr>
                     <th>Plan Name</th>
+                    <th>Host</th>
                     <th>Date</th>
                     <th>City</th>
                     <th>State</th>
@@ -98,6 +96,13 @@
                 {% for plan in my_plans %}
                 <tr>
                     <td><a href="/plans/{{ plan.id }}">{{ plan.name }}</a></td>
+                    <td>
+                        {% if plan.host.id == request.session.id %}
+                            Yours
+                        {% else %}
+                            <a href="/users/{{plan.host.id}}">{{ plan.host.name }}</a>
+                        {% endif %}
+                    </td>
                     <td>{{ plan.date }}</td>
                     <td>{{ plan.city }}</td>
                     <td>{{ plan.state }}</td>
@@ -105,51 +110,67 @@
                 {% endfor %}
             </table>
         </div>
-        <h2>Create Plan</h2>
-        <div class="error">
-            {% if messages %}
-            <ul id="messages">
-                {% for message in messages %}
-                <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
-                {% endfor %}
-            </ul>  
-            {% endif %}
+        <div>
+            <h2>Create Plan</h2>
+            <div class="error">
+                {% if messages %}
+                <ul id="messages">
+                    {% for message in messages %}
+                    <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
+                    {% endfor %}
+                </ul>  
+                {% endif %}
+            </div>
+            <div class="text-error">
+            <!-- add-form -->
+            <form action="/plans/new" method='post' enctype="multipart/form-data">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td><input type="text" name="name" placeholder="Name"></td>
+                    </tr>
+                    <tr>
+                        <td>Description: </td>
+                        <td><input type="text" name="description"  placeholder="Description"></td>
+                    </tr>                
+                    <tr>
+                        <td>Date: </td>
+                        <td><input type="datetime-local" name="date"></td>
+                    </tr>
+                    <tr>
+                        <td>Address: </td>
+                        <td><input type="text" name="address"  placeholder="Address"></td>
+                    </tr>
+                    <tr>
+                        <td>City: </td>
+                        <td><input type="text" name="city" placeholder="City"></td>
+                    </tr>
+                    <tr>
+                        <td>State: </td>
+                        <td>
+                            <select type="text" name="state">
+                                {% for state in all_states %}
+                                    {% if state == 'CA'%} 
+                                        <option value="{{state}}" label="{{state}}" selected/>
+                                    {% else %}
+                                        <option value="{{state}}" label="{{state}}"/>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Zipcode: </td>
+                        <td><input type="text" name="zipcode"  placeholder="ZipCode"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><button type="submit">Create</button></td>
+                    </tr>
+                </table>
+            </form>
         </div>
-        <div class="text-error">
-        <!-- add-form -->
-        <form action="/plans/new" method='post' enctype="multipart/form-data">
-            {% csrf_token %}
-            <table>
-                <tr>
-                    <td>Name:</td>
-                    <td><input type="text" name="name" placeholder="Name"></td>
-                </tr>
-                <tr>
-                    <td>Description: </td>
-                    <td><input type="text" name="description"  placeholder="Description"></td>
-                </tr>                
-                <tr>
-                    <td>Date: </td>
-                    <td><input type="datetime-local" name="date"></td>
-                </tr>
-                <tr>
-                    <td>Zipcode: </td>
-                    <td><input type="text" name="zipcode"  placeholder="ZipCode"></td>
-                </tr>
-                <tr>
-                    <td>City: </td>
-                    <td><input type="text" name="city" placeholder="City"></td>
-                </tr>
-                <tr>
-                    <td>State: </td>
-                    <td><input type="text" name="state" placeholder="state"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><button type="submit">Create</button></td>
-                </tr>
-            </table>
-        </form>
         <!-- group shiz -->
         <div>
             <h2>See Groups</h2>
@@ -231,10 +252,10 @@
                     <td>Description: </td>
                     <td><input type="text" name="description"  placeholder="Description"></td>
                 </tr>                
-                <tr>
+                <!-- <tr>
                     <td>Tags (please separate with commas): </td>
                     <td><input type="text" name="tag"></td>
-                </tr>
+                </tr> -->
                 <tr>
                     <td></td>
                     <td><button type="submit">Create</button></td>

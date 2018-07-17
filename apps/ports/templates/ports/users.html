@@ -29,8 +29,10 @@
         <div class="main_content">
             <div class="main">
                 <h1>{{user.username}}</h1>
-                {% if user.profile_pic_thumb.url != null %}
+                {% if user.profile_pic_thumb.url != "/media/" %}
                     <img src="{{user.profile_pic_thumb.url}}" class="profile_pic">
+                {% else %}
+                    <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic">
                 {% endif %}
                 <table>
                     <tr>
@@ -43,7 +45,111 @@
                     </tr>
                 </table>
             </div>
-            {% if user.id != request.session.id  %}
+            {% if user.id == request.session.id  %}
+                <h3>Edit Profile</h3>
+                <form action="/edit_user/process" method='post' enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <table>
+                        <tr>
+                            <td>Name:</td>
+                            <td><input type="text" name="name" value="{{user.name}}"></td>
+                        </tr>
+                        <tr>
+                            <td>Username: </td>
+                            <td><input type="text" name="username" value="{{user.username}}"></td>
+                        </tr>
+                        <tr>
+                            <td>Email: </td>
+                            <td><input type="email" name="email" value="{{user.email}}"></td>
+                        </tr>                
+                        <tr>
+                            <td>Birthday: </td>
+                            <td><input type="date" name="bday" value="{{user.birthday}}"></td>
+                        </tr>
+                        <tr>
+                            <td>Address: </td>
+                            <td><input type="text" name="address"  value="{{user.address}}"></td>
+                        </tr>
+                        <tr>
+                            <td>Zipcode: </td>
+                            <td><input type="text" name="zipcode" value="{{user.zipcode}}"></td>
+                        </tr>
+                        <tr>
+                            <td>City: </td>
+                            <td><input type="text" name="city" value="{{user.city}}"></td>
+                        </tr>
+                        <tr>
+                            <td>State: </td>
+                            <td><input type="text" name="state" value="{{user.state}}"></td>
+                        </tr>
+                        {% if user.user_level < 9 %}
+                        <tr>
+                            <td>Position:</td>
+                            <td>
+                                <select required="required" name="position" >
+                                    <option value="1" {% if user.user_level == 1 %}selected="selected"{%endif%}>Photographer</option>
+                                    <option value="2" {% if user.user_level == 2 %}selected="selected"{%endif%}>Model</option>
+                                    <option value="3" {% if user.user_level == 3 %}selected="selected"{%endif%}>Client</option>
+                                </select>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td><button type="submit">Update</button></td>
+                        </tr>
+                    </table>
+                </form>
+                <h3>Edit Profile Picture</h3>
+                <form action="/edit_profile_pic/process" method='post' enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <table>
+                        <tr>
+                            <td>Profile Picture:</td>
+                            <td>
+                                <input type="file" name="prof_pic" id="form_prof_pics">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td><button type="submit">Update</button></td>
+                        </tr>
+                    </table>
+                </form>
+                <h3>Edit password</h3>
+                <form action="/edit_pw/process" method='post'>
+                    {% csrf_token %}
+                    <table>
+                        <tr>
+                            <td>Old Password:</td>
+                            <td><input type="password" name="pw"></td>
+                        </tr>
+                        <tr>
+                            <td>New password: </td>
+                            <td><input type="password" name="new_pw"></td>
+                            <td>*Password should be at least 8 characters</td>
+                        </tr>
+                        <tr>
+                            <td>Confirm Password:</td>
+                            <td><input type="password" name="new_pw_confirm"></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td><button type="submit">Update</button></td>
+                        </tr>
+                    </table>
+                </form>
+                <h3>Add Photo to Portfolio</h3>
+                <form action="/add_photo/{{user.id}}" method="post" enctype="multipart/form-data">
+                    {%csrf_token%}
+                    <input type="file" name="portfolio_pic" id="form_port_pics" class="text-align-center">
+                    <input type="text" name="title">
+                    <input type="submit" value="Upload">
+                </form>
+            {% else %}
                 {% if my_plans_exclude.exists == True %}
                 <h3>Add {{user.name}} to your plans!</h3>
                 <form action="/plans/add/{{user.id}}" method="post">
@@ -73,10 +179,7 @@
                 <h3>{{user.username}}'s Portfolio</h3>
 
                 {% for photo in portfolio %}
-                    <div class="port_image">
-                        <img src="{{photo.image_port.url}}">
-                        <a href="/photo/{{photo_id}}">Buy!</a>
-                    </div>
+                    <a href="/photo/{{photo_id}}"><img src="{{photo.image_thumb.url}}"></a>
                 {% endfor%}
             </div>
         </div>

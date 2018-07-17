@@ -60,8 +60,8 @@
                     <td><input type="date" name="bday"></td>
                 </tr>
                 <tr>
-                    <td>Zipcode: </td>
-                    <td><input type="text" name="zipcode"  placeholder="ZipCode"></td>
+                    <td>Address: </td>
+                    <td><input type="text" name="address"  placeholder="Address"></td>
                 </tr>
                 <tr>
                     <td>City: </td>
@@ -69,8 +69,22 @@
                 </tr>
                 <tr>
                     <td>State: </td>
-                    <td><input type="text" name="state" placeholder="state"></td>
-                </tr>                                  
+                    <td>
+                        <select type="text" name="state">
+                            {% for state in all_states %}
+                                {% if state == 'CA'%} 
+                                    <option value="{{state}}" label="{{state}}" selected/>
+                                {% else %}
+                                    <option value="{{state}}" label="{{state}}"/>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>Zipcode: </td>
+                    <td><input type="text" name="zipcode"  placeholder="ZipCode"></td>
+                </tr>                                 
                 <tr>
                     <td>Password: </td>
                     <td><input type="password" name="pw" placeholder="password"></td>
