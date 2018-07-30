@@ -1,3 +1,9 @@
+/* body{
+    background-color:green;
+} */
+p, td, th, a, label{
+    font-size: 1vw;
+}
 .wrapper{
     margin: 0 auto;
     text-align: center;
@@ -5,24 +11,8 @@
 .text-align-center{
     margin: 0 auto;
 }
-.main_header{
-    background-color:#cfb4de;
-    color: white;
-}
 .head_logo{
     display: inline-block;
-}
-.right-side{
-    text-align: right;
-    margin-left: 800px;
-}
-.info_boxes{
-    margin-top: 40px;
-    border: #cfb4de solid 2px;
-    width: 15%;
-    display: inline-block;
-    vertical-align: top;
-    height: 200px;
 }
 .info_title{
     margin-top: 0;
@@ -31,11 +21,307 @@
     height:40px;
 }
 #logo{
-    width: 600px;
+    width: 40%;
 }
 td{
     text-align: left !important;
 }
+td, th{padding: 0;}
 .profile_pic{
     border-radius: 50% !important;
+    width: 75%;
+    height:auto;
 }
+/* Remove the navbar's default margin-bottom and rounded borders */ 
+.navbar {
+    position:fixed;
+    left:-5;
+    width: 100%;
+    margin-bottom: 5px;
+    border-radius: 0;
+    z-index: 10;
+}
+.navbar-brand{
+    font-size: 2vw;
+}
+.nav-item{
+    font-size: 1.25vw;
+}
+#jeff-carousel{
+    margin-bottom:10%;
+}
+/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+.row.content {
+    position:relative;
+}
+.main-show{
+    margin: 0px 20px 10px 20px;
+}
+/* Set gray background color and 100% height */
+/* .sidenav {
+    padding-top: 20px;
+    background-color: #f1f1f1;
+    height: 95%;
+}
+*/
+.sidenav {
+    background-color: #333;
+    bottom: 0px;
+    left: 0px;
+    position: fixed;
+    top: 0px;
+    z-index: 8;
+    overflow: hidden;
+    padding-top:5%;
+    height:100%;
+    /* -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out; */
+  }
+  /*
+  .sidenav.collapsed {
+    width: 60px;
+  }
+  
+  .sidenav.collapsed .glyphicon {
+    font-size: 22px;
+  }
+  
+  .sidenav.collapsed .nav-label {
+    display: none;
+  }
+  
+  .btn-expand-collapse {
+      position: absolute;
+      display: block;
+      left: 0px;
+      bottom:0;
+      width: 100%;
+      padding: 8px 0;
+      border-top:solid 1px #666;
+      color: grey;
+      font-size: 20px;
+      text-align: center;
+  }
+  
+  .btn-expand-collapse:hover,
+  .btn-expand-collapse:focus {
+      background-color: #222;
+      color: white;
+  }
+  
+  .btn-expand-collapse:active {
+      background-color: #111;
+  }
+  */
+.main-content {
+    margin-top: 5%;
+    margin-left: 20%;
+    width:80%;
+    padding: 10px 20px 40px 10px;
+    margin-bottom:5%;
+  }
+.main-content-index {
+    margin-top: 5%;
+    padding: 10px 0px 40px 0px;
+    margin-bottom:2%;
+}
+  /*
+  .collapsed + .main-content {
+    margin-left: 60px;
+  } */
+/* Set black background color, white text and some padding */
+footer {
+    position: relative;
+    left:10%;
+    /* bottom:0; */
+    bottom:0;
+    width:90%;
+    margin-top:-60px;
+    height:60px;
+    background-color: #555;
+    color: white;
+    padding: 15px;
+    clear: both;
+}
+.index-footer{
+    margin-top: 5%;
+    width:100% !important;
+    left: 0 !important;
+}
+section{
+    height:10px;
+}
+.error{
+    color:red;
+}
+.navbar-primary-menu,
+.navbar-primary-menu li {
+  margin:0; padding:0;
+  list-style: none;
+}
+.navbar-primary-menu li a {
+    display: block;
+    padding: 10px 18px;
+    text-align: left;
+    border-bottom:solid 1px #444;
+    color: #C3447A;
+    font-size: 1vw ;
+}
+a, .primary-color{ 
+    color:#C3447A;
+}
+a:hover{
+    color:#333;
+    text-decoration: none;
+}
+.btn{
+    color:#C3447A;
+    border:#C3447A 2px solid;
+    font-size: 2vw;
+    box-shadow: 2px 5px 4px #888888;
+}
+.btn:hover{
+    color:lightgray;
+    background-color:#C3447A;
+    box-shadow: none;
+}
+.navbar-primary-menu li a:hover {
+    background-color: #000;
+    text-decoration: none;
+    color: white;
+  }
+#mainthing{
+    margin-top:10vh;
+    min-height:100vh;
+}
+#main-body{
+    max-width:80%;
+    min-height:75vh;
+}
+.wat{
+    position:relative;
+    top:10vh;
+    min-height: 50vh;
+    
+}
+.carousel-title{
+    font-size:6vw;
+}
+.carousel-content{
+    font-size:3vw;
+}
+#login-register-head{
+    position:relative;
+    height: 50px;
+}
+#login-register{
+    margin-top: 5%;
+    box-shadow: 5px 10px 8px #888888;
+    padding: 20px;
+    min-height: 450px;
+}
+#login-register a{
+    color:grey;
+    font-size: 4vw;
+}
+#login-register a:hover{
+    color: #C3447A;
+}
+#login-form{
+    display:none;
+}
+.active{
+    color: #C3447A !important;
+}
+
+.portfolio_item{
+    padding:10px;
+    max-height:100vh;
+    width:auto;
+}
+carousel{
+    width:100vw !important;
+}
+#chatroom{
+    height: 300px;
+    overflow-y:scroll;
+}
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+    body{
+        text-align:center;
+    }
+    .sidenav {
+        height: auto;
+        position:relative;
+        top:10;
+        padding: 15px;
+        display:block;
+    }
+    .row.content {
+        height:auto;
+        text-align:center;
+    }
+    .main-content{
+        margin-left: 0;
+        text-align:center;
+    }
+    td, th{
+        text-align:center;
+    }
+    .navbar-primary-menu{
+        margin-top:10px;
+    }
+    .navbar-primary-menu li a {
+        display: block;
+        padding: 10px 18px;
+        text-align: center;
+        border-bottom:solid 1px #444;
+        color: #ccc;
+    }
+    footer{
+        width:100%;
+        left:0;
+    }
+    .form-group{
+        text-align:left !important;
+    }
+    .wat{
+        margin-top:10%;
+        height: 10vh;
+    }
+    #main-body{
+        max-width:80%;
+        min-height:15vh;
+    }
+    #mainthing{
+        margin-top:10%;
+    }
+    .portfolio_item{
+        padding:10px;
+        max-height:100vh;
+        width:100vw;
+    }
+    p, td, th, a, li, label, ul{
+        font-size: 2.5vw !important;
+    }
+    .navbar-brand{
+        font-size: 4vw !important;
+    }
+    .nav-item{
+        font-size: 3vw !important;
+    }
+    img{
+        width: 80vw;
+    }
+    .navbar-primary-menu li a {
+        display: block;
+        padding: 10px 18px;
+        text-align: center;
+        border-bottom:solid 1px #444;
+        color: #C3447A;
+        font-size: 2.25vw !important ;
+    }
+}
+

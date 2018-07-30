@@ -5,184 +5,340 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Main</title>
-    <!-- Latest compiled jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
-    <script src="{% static 'ports/js/app.js' %}"></script>
+    <title>piCSell | Users</title>
 </head>
 <body>
-    <div class="container-fluid wrapper">
-        <!-- Header -->
-        <div class="main_header">
-            <p class="head_logo">piCSell</p>
-            <!-- add images and other cool things  -->
-            <a href="/main">Home</a>
-            <a href="/logout">Log Out</a>
-        </div>
-        <!-- main content -->
-        <div class="main_content">
-            <div class="main">
-                <h1>{{user.username}}</h1>
-                {% if user.profile_pic_thumb.url != "/media/" %}
-                    <img src="{{user.profile_pic_thumb.url}}" class="profile_pic">
-                {% else %}
-                    <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic">
-                {% endif %}
-                <table>
-                    <tr>
-                        <td>Name: </td>
-                        <td>{{user.name}}</td>
-                    </tr>
-                    <tr>
-                        <td>Email: </td>
-                        <td>{{user.email}}</td>
-                    </tr>
-                </table>
+    <nav class="navbar navbar-expand-md navbar-inverse fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/main">piCSell</a>
+                <button class="navbar-toggler btn btn-default" type="button" data-toggle="collapse" data-target="#myNavbar" aria-controls="myNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon glyphicon glyphicon-menu-hamburger"></span>
+                </button>
             </div>
-            {% if user.id == request.session.id  %}
-                <h3>Edit Profile</h3>
-                <form action="/edit_user/process" method='post' enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <table>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-item nav-link" href="/main">Home
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-item nav-link" href="/users/{{request.session.id}}">Profile
+                            <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item">
+                        <a class="nav-item nav-link" href="/logout">
+                            <span class="glyphicon glyphicon-log-out"></span> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mainthing" class="container-fluid text-center ">
+        <div class="row content">
+            <div class="col-sm-2 col-l-12 sidenav row justify-content-center">
+                {% if logged_user.user_level == 9 %}
+                <h1 class="primary-color text-center col-sm">{{logged_user.username}}</h1>
+                <a href="/edit_user">
+                    <button>Edit Profile</button>
+                </a>
+                <a href="/manage_users">
+                    <button>Manage Users</button>
+                </a>
+                {% else %}
+                <h1 id="main-username" class="primary-color text-center col-sm">{{logged_user.username}} </h1>
+                <a href="/users/{{logged_user.id}}">
+                    {% if logged_user.profile_pic_thumb %}
+                    <img src="{{logged_user.profile_pic_thumb.url}}" class="profile_pic"> 
+                    {% else %}
+                    <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic"> 
+                    {% endif %}
+                </a>
+                <ul class="navbar-primary-menu col-sm-10 justify-content-center">
+                    <li>
+                        <a href="/main">Home</li>
+                    </a>
+                    {% if logged_user.id == user.id %}
+                    <li>
+                        <a data-toggle="collapse" href="#edit-profile" role="button" aria-expanded="false" aria-controls="edit-profile">Edit Profile</a>
+                    </li>
+                    <li>
+                        <a data-toggle="collapse" href="#add-portfolio" role="button" aria-expanded="false" aria-controls="add-portfolio">Add to Portfolio</a>
+                    </li>
+                    {% endif %}
+                {% endif %}
+                    <li>
+                        <a href="#plans">Plans</a>
+                    </li>
+                    <li>
+                        <a href="#groups">Groups</a>
+                    </li>
+                </ul>
+            </div>
+            <div id="main-body" class="col-sm-10 col-sm-offset-2 text-left main-content row">
+                <div class="table-responsive col-sm-10 row">
+                    <h3 id="plans" class="col-sm-12">{{user.username}}'s Info</h3>
+                    
+                    <div class="error">
+                        {% if messages %}
+                        <ul id="messages">
+                            {% for message in messages %}
+                            <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
+                            {% endfor %}
+                        </ul>  
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-2">
+                        {% if user.profile_pic_thumb %}
+                        <img src="{{user.profile_pic_thumb.url}}" class="profile_pic"> 
+                        {% else %}
+                        <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic"> 
+                        {% endif %}
+                    </div> 
+                    <table class="table col-sm-6">
                         <tr>
-                            <td>Name:</td>
-                            <td><input type="text" name="name" value="{{user.name}}"></td>
-                        </tr>
-                        <tr>
-                            <td>Username: </td>
-                            <td><input type="text" name="username" value="{{user.username}}"></td>
+                            <td>Name: </td>
+                            <td>{{user.name}}</td>
                         </tr>
                         <tr>
                             <td>Email: </td>
-                            <td><input type="email" name="email" value="{{user.email}}"></td>
-                        </tr>                
-                        <tr>
-                            <td>Birthday: </td>
-                            <td><input type="date" name="bday" value="{{user.birthday}}"></td>
-                        </tr>
-                        <tr>
-                            <td>Address: </td>
-                            <td><input type="text" name="address"  value="{{user.address}}"></td>
-                        </tr>
-                        <tr>
-                            <td>Zipcode: </td>
-                            <td><input type="text" name="zipcode" value="{{user.zipcode}}"></td>
+                            <td>{{user.email}}</td>
                         </tr>
                         <tr>
                             <td>City: </td>
-                            <td><input type="text" name="city" value="{{user.city}}"></td>
+                            <td>{{user.city}}</td>
                         </tr>
                         <tr>
                             <td>State: </td>
-                            <td><input type="text" name="state" value="{{user.state}}"></td>
+                            <td>{{user.state}}</td>
                         </tr>
-                        {% if user.user_level < 9 %}
-                        <tr>
-                            <td>Position:</td>
-                            <td>
-                                <select required="required" name="position" >
-                                    <option value="1" {% if user.user_level == 1 %}selected="selected"{%endif%}>Photographer</option>
-                                    <option value="2" {% if user.user_level == 2 %}selected="selected"{%endif%}>Model</option>
-                                    <option value="3" {% if user.user_level == 3 %}selected="selected"{%endif%}>Client</option>
-                                </select>
-                            </td>
-                        </tr>
+                    </table>
+                </div>
+                <div class="container-fluid">
+                    {% if user.id == request.session.id  %}
+                    <a data-toggle="collapse" href="#edit-profile" role="button" aria-expanded="false" aria-controls="edit-profile" class="btn btn-default"><h3>Edit Profile</h3></a>
+                    <a  data-toggle="collapse" href="#add-portfolio" role="button" aria-expanded="false" aria-controls="add-portfolio" class="btn btn-default"><h3>Add Photo to Portfolio</h3></a>
+                    <div id="edit-profile" class="collapse">
+                        <form action="/edit_user/process" method='post' enctype="multipart/form-data" class="form-horizontal text-left">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="name">Name:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="name" value="{{user.name}}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="username">Username:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="username" value="{{user.username}}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="email">Email:</label>
+                                <div class="col-sm-6">
+                                    <input type="email" name="email" value="{{user.email}}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="bday">Birthday:</label>
+                                <div class="col-sm-6">
+                                    <input type="date" name="bday" value="{{user.birthday}}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="address">Address:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="address"  value="{{user.address}}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="zipcode">Zipcode:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="zipcode" value="{{user.zipcode}}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="city">City:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="city" value="{{user.city}}" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="state">State:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="state" value="{{user.state}}" class="form-control">
+                                </div>
+                            </div>
+                            {% if user.user_level < 9 %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="position">Position:</label>
+                                <div class="col-sm-6">
+                                    <select required name="position" class="form-control">
+                                        <option value="1" {% if user.user_level == 1 %}selected="selected"{%endif%}>Photographer</option>
+                                        <option value="2" {% if user.user_level == 2 %}selected="selected"{%endif%}>Model</option>
+                                        <option value="3" {% if user.user_level == 3 %}selected="selected"{%endif%}>Client</option>
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <input class="btn btn-default" type="submit" value="Update">
+                                </div>
+                            </div>
+                        </form>
+                        <h3>Edit Profile Picture</h3>
+                        <form action="/edit_profile_pic/process" method='post' enctype="multipart/form-data" class="form-horizontal">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="prof_pic">Profile Picture:</label>
+                                <div class="col-sm-6">
+                                    <input type="file" name="prof_pic" id="form_prof_pics" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <input class="btn btn-default" type="submit" value="Update">
+                                </div>
+                            </div>
+                        </form>
+                        <h3>Edit password</h3>
+                        <form action="/edit_pw/process" method='post' class="form-horizontal">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="pw">Password:</label>
+                                <div class="col-sm-6">
+                                    <input type="password" name="pw" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="new_pw">New Password:</label>
+                                <div class="col-sm-6">
+                                    <input type="password" name="new_pw" class="form-control">
+                                    *Password should be at least 8 characters
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="new_pw_confirm">Confirm new PW:</label>
+                                <div class="col-sm-6">
+                                    <input type="password" name="new_pw_confirm" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">  
+                                <div class="col-sm-4 col-sm-offset-2">      
+                                    <input class="btn btn-default" type="submit" value="Update">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="add-portfolio" class="collapse">
+                        <form action="/add_photo/{{user.id}}" method="post" enctype="multipart/form-data" class="form-horizontal">
+                            {%csrf_token%}
+                            <div class="form-group"> 
+                                <label class="control-label col-sm-2" for="portfolio_pic">New Portfolio Picture:</label>
+                                <div class="col-sm-6">
+                                    <input type="file" name="portfolio_pic" id="form_port_pics" class=" form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="title">Title:</label>
+                                <div class="col-sm-6"> 
+                                    <input type="text" name="title">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <input type="submit" class="btn btn-default" value="Upload">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {% else %}
+                        <!-- showing chatroom!!! -->
+                        <div id="chatroom" class="container-fluid border">
+                            <h4 class="h4 border-bottom">Chatroom</h4>
+                            {% for message in chatroom.chats_messages.all %}
+                                {% if message.author.id == request.session.id %}
+                                    <p class="bg-light">[{{message.author.name}}]: {{message.message}} - {{message.created_on|date:"M d, Y - h:i:s A"}}</p>
+                                {% else %}
+                                    <p class="bg-primary">[{{message.author.name}}]: {{message.message}} - {{message.created_on|date:"M d, Y - h:i:s A"}}</p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <!-- adding chat!!! -->
+                        <form action="/chats/add_message/{{user.id}}" method="post" class="form-inline">
+                        {%csrf_token%}
+                            <div class="form-group">
+                                <div class="col-sm-6">
+                                    <input type="text" name="message" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">  
+                                <div class="col-sm-4 col-sm-offset-2">      
+                                    <input class="btn btn-default" type="submit" value="Enter">
+                                </div>
+                            </div>
+                        </form>
+                        {% if my_plans_exclude.exists == True %}
+                        <h3>Add {{user.name}} to your plans!</h3>
+                        <form action="/plans/add/{{user.id}}" method="post">
+                            {% csrf_token %}
+                            <select name="add_plan">
+                            {% for plan in my_plans_exclude %}
+                                <option value="{{plan.id}}">{{ plan.name }}</option>
+                            {% endfor %}
+                            </select>
+                            <input type="submit" class="btn btn-default" value="Add to Plan"/>
+                        </form>
                         {% endif %}
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td><button type="submit">Update</button></td>
-                        </tr>
-                    </table>
-                </form>
-                <h3>Edit Profile Picture</h3>
-                <form action="/edit_profile_pic/process" method='post' enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <table>
-                        <tr>
-                            <td>Profile Picture:</td>
-                            <td>
-                                <input type="file" name="prof_pic" id="form_prof_pics">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td><button type="submit">Update</button></td>
-                        </tr>
-                    </table>
-                </form>
-                <h3>Edit password</h3>
-                <form action="/edit_pw/process" method='post'>
-                    {% csrf_token %}
-                    <table>
-                        <tr>
-                            <td>Old Password:</td>
-                            <td><input type="password" name="pw"></td>
-                        </tr>
-                        <tr>
-                            <td>New password: </td>
-                            <td><input type="password" name="new_pw"></td>
-                            <td>*Password should be at least 8 characters</td>
-                        </tr>
-                        <tr>
-                            <td>Confirm Password:</td>
-                            <td><input type="password" name="new_pw_confirm"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td><button type="submit">Update</button></td>
-                        </tr>
-                    </table>
-                </form>
-                <h3>Add Photo to Portfolio</h3>
-                <form action="/add_photo/{{user.id}}" method="post" enctype="multipart/form-data">
-                    {%csrf_token%}
-                    <input type="file" name="portfolio_pic" id="form_port_pics" class="text-align-center">
-                    <input type="text" name="title">
-                    <input type="submit" value="Upload">
-                </form>
-            {% else %}
-                {% if my_plans_exclude.exists == True %}
-                <h3>Add {{user.name}} to your plans!</h3>
-                <form action="/plans/add/{{user.id}}" method="post">
-                    {% csrf_token %}
-                    <select name="add_plan">
-                    {% for plan in my_plans_exclude %}
-                        <option value="{{plan.id}}">{{ plan.name }}</option>
-                    {% endfor %}
-                    </select>
-                    <input type="submit" value="Add to Plan"/>
-                </form>
-                {% endif %}
-                {% if my_plans_include.exists == True %}
-                <h3>Your plans that include {{user.name}}</h3>
-                <form action="/plans/remove/{{user.id}}" method="post">
-                    {% csrf_token %}
-                    <select name="remove_plan">
-                    {% for plan in my_plans_include %}
-                        <option value="{{plan.id}}">{{ plan.name }}</option>
-                    {% endfor %}
-                    </select>
-                    <input type="submit" value="Remove from Plan"/>
-                </form>
-                {% endif %}
-            {% endif %}
-            <div class="portfolio_items">
-                <h3>{{user.username}}'s Portfolio</h3>
-
-                {% for photo in portfolio %}
-                    <a href="/photo/{{photo_id}}"><img src="{{photo.image_thumb.url}}"></a>
-                {% endfor%}
+                        {% if my_plans_include.exists == True %}
+                        <h3>Your plans that include {{user.name}}</h3>
+                        <form action="/plans/remove/{{user.id}}" method="post">
+                            {% csrf_token %}
+                            <select name="remove_plan">
+                            {% for plan in my_plans_include %}
+                                <option value="{{plan.id}}">{{ plan.name }}</option>
+                            {% endfor %}
+                            </select>
+                            <input type="submit" class="btn btn-default" value="Remove from Plan"/>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="portfolio_items row container-fluid">
+                    <h3 class="col-sm-12 text-center">{{user.username}}'s Portfolio</h3>
+                    {% for photo in portfolio %}
+                        <a class= "col-sm-4" href="/photo/{{photo.id}}"  data-toggle="modal" data-target="#photo-modal-{{photo.id}}"><img class="portfolio_item col-sm-12" src="{{photo.image_thumb.url}}"></a>
+                    {% endfor%}
+                </div>
             </div>
         </div>
     </div>
+    {% for photo in portfolio %}
+    <div class="modal bd-modal-lg justify-content-center content" id="photo-modal-{{photo.id}}">
+        <div class="container-fluid justify-content-center content">
+            <div class="row justify-content-center content">
+                <a class="col-sm-12 justify-content-center content" data-dismiss="modal"><img class="portfolio_item col-sm-12 justify-content-center content" src="{{photo.image.url}}"></a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <footer class="container-fluid text-center">
+        <p>&#169; Jeffrey Ahn</p>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'ports/css/bootstrap.css' %}">
+    <!-- Latest compiled JavaScript -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <script src="{% static 'ports/js/bootstrap.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
+    <script src="{% static 'ports/js/app.js' %}"></script>
 </body>
 </html>

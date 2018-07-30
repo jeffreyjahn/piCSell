@@ -17,71 +17,141 @@
     <script src="{% static 'ports/js/app.js' %}"></script>
 </head>
 <body>
-    <div class="container-fluid wrapper" id="tupac">
-        <!-- Adding main logo and company name -->
-        <div class="main_header">
-            <p class="head_logo">piCSell</p>
-            <!-- add images and other cool things  -->
-            <a href="/main">Home</a>
-            <a href="/logout">Log Out</a>
+    <nav class="navbar navbar-expand-md navbar-inverse fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/main">piCSell</a>
+                <button class="navbar-toggler btn btn-default" type="button" data-toggle="collapse" data-target="#myNavbar" aria-controls="myNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon glyphicon glyphicon-menu-hamburger"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-item nav-link" href="/main">Home
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-item nav-link" href="/users/{{request.session.id}}">Profile
+                            <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item">
+                        <a class="nav-item nav-link" href="/logout">
+                            <span class="glyphicon glyphicon-log-out"></span> Logout</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <!-- error log -->
-        <div class="error">
-            {% if messages %}
-            <ul id="messages">
-                {% for message in messages %}
-                <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
-                {% endfor %}
-            </ul>  
-            {% endif %}
-        </div>
-        <div class="edit_main">
-            <h2>{{plan.name}}</h2>
-            <p>{{ plan.description }}</p>
-            <ul>
-            {% for member in plan.members.all %}
-                <li><a href="/users/{{ member.id }}">{{member.name}}</a></li>
-            {% endfor %}
-            </ul>
-            <!-- edit-form -->
-            {% if plan.host.id == request.session.id %}
-            <h3>Edit Plan</h3>
-            <form action="/plans/new" method='post'>
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <td>Name:</td>
-                        <td><input type="text" name="name" value="{{plan.name}}"></td>
-                    </tr>
-                    <tr>
-                        <td>Description: </td>
-                        <td><input type="text" name="description"  value="{{plan.description}}"></td>
-                    </tr>                
-                    <tr>
-                        <td>Date: </td>
-                        <td><input type="datetime-local" name="date"></td>
-                    </tr>
-                    <tr>
-                        <td>Zipcode: </td>
-                        <td><input type="text" name="zipcode"  value="ZipCode"></td>
-                    </tr>
-                    <tr>
-                        <td>City: </td>
-                        <td><input type="text" name="city" value="City"></td>
-                    </tr>
-                    <tr>
-                        <td>State: </td>
-                        <td><input type="text" name="state" value="state"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button type="submit">Edit</button></td>
-                    </tr>
-                </table>
-            </form>
-            <a href="/plans/{{plan.id}}/delete"><button>Delete Plan</button></a>
-            {% endif %}
+    </nav>
+
+    <div id="mainthing" class="container-fluid text-center ">
+        <div class="row content">
+            <div class="col-sm-2 col-l-12 sidenav row justify-content-center">
+                {% if logged_user.user_level == 9 %}
+                <h1 class="primary-color text-center col-sm">{{logged_user.username}}</h1>
+                <a href="/edit_user">
+                    <button>Edit Profile</button>
+                </a>
+                <a href="/manage_users">
+                    <button>Manage Users</button>
+                </a>
+                {% else %}
+                <h1 id="main-username" class="primary-color text-center col-sm">{{logged_user.username}} </h1>
+                <a href="/users/{{logged_user.id}}">
+                    {% if logged_user.profile_pic_thumb %}
+                    <img src="{{logged_user.profile_pic_thumb.url}}" class="profile_pic"> 
+                    {% else %}
+                    <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic"> 
+                    {% endif %}
+                </a>
+                <ul class="navbar-primary-menu col-sm-10 justify-content-center">
+                    <li>
+                        <a href="/main">Home</li>
+                    </a>
+                    {% if logged_user.id == plan.host.id %}
+                    <li>
+                        <a data-toggle="collapse" href="#edit-plan" role="button" aria-expanded="false" aria-controls="edit-plan">Edit Plan</a>
+                    </li>
+                    <li>
+                        <a data-toggle="collapse" href="#edit-plan" role="button" aria-expanded="false" aria-controls="edit-plan">Add to Plan</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a data-toggle="collapse" href="#edit-plan" role="button" aria-expanded="false" aria-controls="edit-plan">Leave Plan</a>
+                    </li>
+                    {% endif %}
+                {% endif %}
+                </ul>
+            </div>
+            <div id="main-body" class="col-sm-10 col-sm-offset-2 text-left main-content row">
+                <div class="container-fluid">
+                    <h2>{{plan.name}}</h2>
+                    <p>{{ plan.description }}</p>
+                    <ul>
+                        <li>Host: <a href="/users/{{ plan.host.id }}">{{plan.host.name}}</a></li>
+                    {% for member in plan.members.all %}
+                        {% if member.id != plan.host.id %}
+                        <li><a href="/users/{{ member.id }}">{{member.name}}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                    <!-- edit-form -->
+                    {% if plan.host.id == request.session.id %}
+                    <h3>Edit Plan</h3>
+                    <form action="/plans/new" method='post'>
+                        {% csrf_token %}
+                        <table>
+                            <tr>
+                                <td>Name:</td>
+                                <td><input type="text" name="name" value="{{plan.name}}"></td>
+                            </tr>
+                            <tr>
+                                <td>Description: </td>
+                                <td><input type="text" name="description"  value="{{plan.description}}"></td>
+                            </tr>                
+                            <tr>
+                                <td>Date: </td>
+                                <td><input type="datetime-local" name="date" value="{{curr_date}}"></td>
+                            </tr>
+                            <tr>
+                                <td>Zipcode: </td>
+                                <td><input type="text" name="zipcode"  value="{{plan.zipcode}}"></td>
+                            </tr>
+                            <tr>
+                                <td>City: </td>
+                                <td><input type="text" name="city" value="{{plan.city}}"></td>
+                            </tr>
+                            <tr>
+                                <td>State: </td>
+                                <td><input type="text" name="state" value="{{plan.state}}"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><button type="submit">Edit</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                    <a href="/plans/{{plan.id}}/delete" class="btn btn-default">Delete Plan</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
+    <footer class="container-fluid text-center">
+        <p>&#169; Jeffrey Ahn</p>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'ports/css/bootstrap.css' %}">
+    <!-- Latest compiled JavaScript -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <script src="{% static 'ports/js/bootstrap.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
+    <script src="{% static 'ports/js/app.js' %}"></script>
 </body>
 </html>

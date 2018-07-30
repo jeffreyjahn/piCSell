@@ -1,267 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>piCSell | Main</title>
-    <!-- Latest compiled jQuery -->
+</head>
+
+<body id="tupac">
+    <nav class="navbar navbar-expand-md navbar-inverse fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/main">piCSell</a>
+                <button class="navbar-toggler btn btn-default" type="button" data-toggle="collapse" data-target="#myNavbar" aria-controls="myNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon glyphicon glyphicon-menu-hamburger"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-item nav-link" href="/main">Home
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-item nav-link" href="/users/{{user.id}}">Profile</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="nav-item nav-link" href="/logout">
+                            <span class="glyphicon glyphicon-log-out"></span> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mainthing" class="container-fluid text-center ">
+        <div class="row content">
+            <div class="col-sm-2 col-l-12 sidenav row justify-content-center">
+                {% if user.user_level == 9 %}
+                <h1 class="primary-color text-center col-sm">{{user.username}}</h1>
+                <a href="/edit_user">
+                    <button>Edit Profile</button>
+                </a>
+                <a href="/manage_users">
+                    <button>Manage Users</button>
+                </a>
+                {% else %}
+                <h1 id="main-username" class="primary-color text-center col-sm">{{user.username}} </h1>
+                <a href="/users/{{user.id}}">
+                {% if user.profile_pic_thumb %}
+                    <img src="{{user.profile_pic_thumb.url}}" class="profile_pic"> {% else %}
+                    <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic"> {% endif %}
+                </a>
+                <ul class="navbar-primary-menu col-sm-10 justify-content-center">
+                    <li>
+                        <a href="/users/{{user.id}}">See My Profile</li>
+                    </a>
+                    {% endif %}
+                    <li>
+                        <a href="#plans">Plans</a>
+                    </li>
+                    <li>
+                        <a href="#groups">Groups</a>
+                    </li>
+                    <li>
+                        <a data-toggle="collapse" href="#new-plan" role="button" aria-expanded="false" aria-controls="new-plan">New Plan</a>
+                    </li>
+                    <li>
+                        <a data-toggle="collapse" href="#new-group" role="button" aria-expanded="false" aria-controls="new-group">New Group</a>
+                    </li>
+                </ul>
+            </div>
+            <div id="main-body" class="col-sm-10 col-sm-offset-2 text-left main-content row">
+                <h1>Welcome {{user.username}}</h1>
+                <div class="error">
+                    {% if messages %} {% for message in messages %}
+                    <p{%if message.tags %} class="{{message.tags}}" {% endif %}>{{message}}</p>
+                        {% endfor %} {% endif %}
+                </div>
+                <div class="main-show col-sm-12">
+                    <h3 id="plans">See Plans</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Plan Name</th>
+                                <th>Host</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>City</th>
+                                <th>State</th>
+                            </tr>
+                            {% for plan in plans %}
+                            <tr>
+                                <td>
+                                    <a href="/plans/{{ plan.id }}">{{ plan.name }}</a>
+                                </td>
+                                <td>
+                                    <a href="/users/{{plan.host.id}}">{{ plan.host.name }}</a>
+                                </td>
+                                <td>{{ plan.description }}</td>
+                                <td>{{ plan.date }}</td>
+                                <td>{{ plan.city }}</td>
+                                <td>{{ plan.state }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <h3>My Plans</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Plan Name</th>
+                                <th>Host</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>City</th>
+                                <th>State</th>
+                            </tr>
+                            {% for plan in my_plans %}
+                            <tr>
+                                <td>
+                                    <a href="/plans/{{ plan.id }}">{{ plan.name }}</a>
+                                </td>
+                                <td>
+                                    {% if plan.host.id == request.session.id %} Yours {% else %}
+                                    <a href="/users/{{plan.host.id}}">{{ plan.host.name }}</a>
+                                    {% endif %}
+                                </td>
+                                <td>{{ plan.description }}</td>
+                                <td>{{ plan.date }}</td>
+                                <td>{{ plan.city }}</td>
+                                <td>{{ plan.state }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <a class="btn btn-default" data-toggle="collapse" href="#new-plan" role="button" aria-expanded="false" aria-controls="new-plan">Create Plan</a>
+                    <section></section>
+                    <div class="text-error"></div>
+                    <!-- add-form -->
+                    <form action="/plans/new" method='post' enctype="multipart/form-data" id="new-plan" class="collapse form-horizontal">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="name">Name:</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="name" placeholder="Name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="description">Description:</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="description" placeholder="Description" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="date">Date:</label>
+                            <div class="col-sm-6">
+                                <input type="datetime-local" name="date" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="Address">Address:</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="address" placeholder="Address" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="city">City:</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="city" placeholder="City" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="state">State:</label>
+                            <div class="col-sm-6">
+                                <select type="text" name="state" class="form-control" required>
+                                    {% for state in all_states %} {% if state == "CA" %}
+                                    <option value="{{state}}" label="{{state}}" selected/> {% else %}
+                                    <option value="{{state}}" label="{{state}}" /> {% endif %} {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="zipcode">Zipcode:</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="zipcode" placeholder="ZipCode" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-4">
+                                <button type="submit" class="btn btn-default">Create</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- group shiz -->
+                <div class="main-show col-sm-12">
+                    <h3 id="groups">See Groups</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Group Name</th>
+                                <th>Creator</th>
+                                <th>Description</th>
+                                <th>Members</th>
+                                <!-- <th>Tags</th> -->
+                            </tr>
+                            {% for group in groups %}
+                            <tr>
+                                <td>
+                                    <a href="/groups/{{ group.id }}">{{ group.name }}</a>
+                                </td>
+                                <td>
+                                    <a href="/users/{{group.creator.id}}">{{ group.creator.name }}</a>
+                                </td>
+                                <td>{{ group.description }}</td>
+                                <td>
+                                    {% for member in group.members.all %}
+                                    <a href="/users/{{member.id}}">{{ member.name }}</a> &nbsp; {% endfor %}
+                                </td>
+                                <!-- <td>
+                                    {% for tag in group.tags %} {{ tag.content }} &nbsp; {% endfor %}
+                                </td> -->
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <h3>My Groups</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Group Name</th>
+                                <th>Creator</th>
+                                <th>Description</th>
+                                <th>Members</th>
+                                <!-- <th>Tags</th> -->
+                            </tr>
+                            {% for group in my_groups %}
+                            <tr>
+                                <td>
+                                    <a href="/groups/{{ group.id }}">{{ group.name }}</a>
+                                </td>
+                                <td>
+                                    <a href="/users/{{group.creator.id}}">{{ group.creator.name }}</a>
+                                </td>
+                                <td>{{ group.description }}</td>
+                                <td>
+                                    {% for member in group.members.all %}
+                                    <a href="/users/{{member.id}}">{{ member.name }}</a> &nbsp; {% endfor %}
+                                </td>
+                                <!-- <td>
+                                    {% for tag in group.tags %} {{ tag.content }} &nbsp; {% endfor %}
+                                </td> -->
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <a class="btn btn-default" data-toggle="collapse" href="#new-group" role="button" aria-expanded="false" aria-controls="new-group">Create Group</a>
+                    <section></section>
+                    <!-- add-form -->
+                    <form action="/groups/new" method='post' enctype="multipart/form-data" id="new-group" class="collapse form-horizontal">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="name">Name:</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="name" placeholder="Name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="description">Description:</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="description" placeholder="Description" class="form-control" required>
+                            </div>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label class="control-label col-sm-2" for="tag">Tag:</label>
+                            <div class="col-sm-6">
+                                <input type="text" name="tag">
+                            </div>
+                        </div> -->
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-4">
+                                <button type="submit" class="btn btn-default">Create</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- <div class="col-sm-2 sidenav">
+                <div class="well">
+                    <p>ADS</p>
+                </div>
+                <div class="well">
+                    <p>ADS</p>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    <footer class="container-fluid text-center">
+        <p>&#169; Jeffrey Ahn</p>
+    </footer>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="{% static 'ports/css/bootstrap.css' %}">
     <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <script src="{% static 'ports/js/bootstrap.js' %}"></script>
     <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
     <script src="{% static 'ports/js/app.js' %}"></script>
-</head>
-<body id="tupac">
-    <div class="container-fluid wrapper">
-        <!-- Header -->
-        <div class="main_header">
-            <p class="head_logo">piCSell</p>
-            <!-- add images and other cool things  -->
-            <a href="/main">Home</a>
-            <a href="/users/{{user.id}}">Profile</a>
-            <a href="/logout">Log Out</a>
-        </div>
-        <!-- main content -->
-        <div class="main_content">
-            <div class="main">
-                {% if user.user_level == 9 %}
-                    <h1>Welcome Admin: {{user.username}}</h1>
-                    <a href="/edit_user"><button>Edit Profile</button></a>
-                    <a href="/manage_users"><button>Manage Users</button></a>
-                {% else %}
-                <div>
-                    <h1>Welcome {{user.username}} </h1>
-                    <p>{{user.profile_pic.thumb.url}}</p>
-                        {% if user.profile_pic_thumb %}
-                            <img src="{{user.profile_pic_thumb.url}}" class="profile_pic">
-                        {% else %}
-                            <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic">
-                        {% endif %}
-                </div>
-                <div class="main-info">
-                    <a href="/users/{{user.id}}"><button>See My Profile</button></a>
-                    <table>
-                        <tr>
-                            <td>Name: </td>
-                            <td>{{user.name}}</td>
-                        </tr>
-                        <tr>
-                            <td>Email: </td>
-                            <td>{{user.email}}</td>
-                        </tr>
-                    </table>
-                    
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        </div>
-        <div>
-            <h2>See Plans</h2>
-            <table>
-                <tr>
-                    <th>Plan Name</th>
-                    <th>Host</th>
-                    <th>Date</th>
-                    <th>City</th>
-                    <th>State</th>
-                </tr>
-                {% for plan in plans %}
-                <tr>
-                    <td><a href="/plans/{{ plan.id }}">{{ plan.name }}</a></td>
-                    <td><a href="/users/{{plan.host.id}}">{{ plan.host.name }}</a></td>
-                    <td>{{ plan.date }}</td>
-                    <td>{{ plan.city }}</td>
-                    <td>{{ plan.state }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div>
-            <h2>My Plans</h2>
-            <table>
-                <tr>
-                    <th>Plan Name</th>
-                    <th>Host</th>
-                    <th>Date</th>
-                    <th>City</th>
-                    <th>State</th>
-                </tr>
-                {% for plan in my_plans %}
-                <tr>
-                    <td><a href="/plans/{{ plan.id }}">{{ plan.name }}</a></td>
-                    <td>
-                        {% if plan.host.id == request.session.id %}
-                            Yours
-                        {% else %}
-                            <a href="/users/{{plan.host.id}}">{{ plan.host.name }}</a>
-                        {% endif %}
-                    </td>
-                    <td>{{ plan.date }}</td>
-                    <td>{{ plan.city }}</td>
-                    <td>{{ plan.state }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div>
-            <h2>Create Plan</h2>
-            <div class="error">
-                {% if messages %}
-                <ul id="messages">
-                    {% for message in messages %}
-                    <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
-                    {% endfor %}
-                </ul>  
-                {% endif %}
-            </div>
-            <div class="text-error">
-            <!-- add-form -->
-            <form action="/plans/new" method='post' enctype="multipart/form-data">
-                {% csrf_token %}
-                <table>
-                    <tr>
-                        <td>Name:</td>
-                        <td><input type="text" name="name" placeholder="Name"></td>
-                    </tr>
-                    <tr>
-                        <td>Description: </td>
-                        <td><input type="text" name="description"  placeholder="Description"></td>
-                    </tr>                
-                    <tr>
-                        <td>Date: </td>
-                        <td><input type="datetime-local" name="date"></td>
-                    </tr>
-                    <tr>
-                        <td>Address: </td>
-                        <td><input type="text" name="address"  placeholder="Address"></td>
-                    </tr>
-                    <tr>
-                        <td>City: </td>
-                        <td><input type="text" name="city" placeholder="City"></td>
-                    </tr>
-                    <tr>
-                        <td>State: </td>
-                        <td>
-                            <select type="text" name="state">
-                                {% for state in all_states %}
-                                    {% if state == 'CA'%} 
-                                        <option value="{{state}}" label="{{state}}" selected/>
-                                    {% else %}
-                                        <option value="{{state}}" label="{{state}}"/>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Zipcode: </td>
-                        <td><input type="text" name="zipcode"  placeholder="ZipCode"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button type="submit">Create</button></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        <!-- group shiz -->
-        <div>
-            <h2>See Groups</h2>
-            <table>
-                <tr>
-                    <th>Group Name</th>
-                    <th>Creator</th>
-                    <th>Description</th>
-                    <th>Members</th>
-                    <th>Tags</th>
-                </tr>
-                {% for group in groups %}
-                <tr>
-                    <td><a href="/groups/{{ group.id }}">{{ group.name }}</a></td>
-                    <td><a href="/users/{{group.creator.id}}">{{ group.creator.name }}</a></td>
-                    <td>{{ group.description }}</td>
-                    <td>
-                        {% for member in group.members.all %}
-                            <a href="/users/{{member.id}}">{{ member.name }}</a> &nbsp;
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {% for tag in group.tags %}
-                            {{ tag.content }} &nbsp;
-                        {% endfor %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div>
-            <h2>My Groups</h2>
-            <table>
-                <tr>
-                    <th>Group Name</th>
-                    <th>Creator</th>
-                    <th>Description</th>
-                    <th>Members</th>
-                    <th>Tags</th>
-                </tr>
-                {% for group in my_groups %}
-                <tr>
-                    <td><a href="/groups/{{ group.id }}">{{ group.name }}</a></td>
-                    <td><a href="/users/{{group.creator.id}}">{{ group.creator.name }}</a></td>
-                    <td>{{ group.description }}</td>
-                    <td>
-                        {% for member in group.members.all %}
-                            <a href="/users/{{member.id}}">{{ member.name }}</a> &nbsp;
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {% for tag in group.tags %}
-                            {{ tag.content }} &nbsp;
-                        {% endfor %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <h2>Create Group</h2>
-        <div class="error">
-            {% if messages %}
-            <ul id="messages">
-                {% for message in messages %}
-                <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
-                {% endfor %}
-            </ul>  
-            {% endif %}
-        </div>
-        <!-- add-form -->
-        <form action="/groups/new" method='post' enctype="multipart/form-data">
-            {% csrf_token %}
-            <table>
-                <tr>
-                    <td>Name:</td>
-                    <td><input type="text" name="name" placeholder="Name"></td>
-                </tr>
-                <tr>
-                    <td>Description: </td>
-                    <td><input type="text" name="description"  placeholder="Description"></td>
-                </tr>                
-                <!-- <tr>
-                    <td>Tags (please separate with commas): </td>
-                    <td><input type="text" name="tag"></td>
-                </tr> -->
-                <tr>
-                    <td></td>
-                    <td><button type="submit">Create</button></td>
-                </tr>
-            </table>
-        </form>
-    </div>
 </body>
+
 </html>

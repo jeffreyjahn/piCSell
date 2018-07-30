@@ -56,7 +56,6 @@ class MainManager(models.Manager):
             if my_bday > eighteen:
                 errors["too_young"] = "You must be at least 18 years of age to join."
         return errors 
-
     def login_validator(self, postData):
         errors = {}
         try:
@@ -124,6 +123,8 @@ class MainManager(models.Manager):
         errors = {}
         if len(postData['name']) < 3:
             errors["group_name_length"] = "Group name needs to be longer."
+        if len(postData['description']) < 3:
+            errors["group_description"] = "Group description needs to be longer."
         if Group.objects.filter(name=postData['name']):
             errors["group_name_exists"] = "Group already exists."
         return errors
@@ -240,3 +241,17 @@ class Plan(models.Model):
     host = models.ForeignKey(User, related_name="my_plans")
 
     objects = MainManager()
+
+class Chat(models.Model):
+    messengers = models.ManyToManyField(User, related_name="my_chatrooms", null=True)
+
+    created_on = models.DateTimeField(auto_now_add=True)
+    modified_on = models.DateTimeField(auto_now=True)
+    
+class Message(models.Model):
+    message = models.TextField(max_length=500)
+    created_on = models.DateTimeField(auto_now_add=True)
+    modified_on = models.DateTimeField(auto_now=True)
+
+    author = models.ForeignKey(User, related_name="my_messages")
+    chatroom = models.ForeignKey(Chat, related_name="chats_messages")

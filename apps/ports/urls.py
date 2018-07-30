@@ -32,7 +32,8 @@ urlpatterns = [
     url(r'^groups/(?P<id>\d+)/edit$', views.edit_group_process),
     url(r'^groups/join/(?P<id>\d+)$', views.join_group),
     url(r'^groups/leave/(?P<id>\d+)$', views.leave_group),
-    url(r'^groups/remove/(?P<group_id>/d+)/(?P<user_id>/d+)$', views.remove_groupmember)
+    url(r'^groups/remove/(?P<group_id>/d+)/(?P<user_id>/d+)$', views.remove_groupmember),
+    url(r'^chats/add_message/(?P<user_id>\d+)$', views.add_message)
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

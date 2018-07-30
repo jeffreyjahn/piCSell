@@ -73,12 +73,12 @@ def main(request):
 
 def edit_user_process(request):
     if request.method !="POST":
-        return redirect('/edit_user')
+        return redirect('/users/{}'.format(request.session['id']))
     errors = User.objects.edit_validator(request.POST, request.session)
     if len(errors):
         for tag, error in errors.iteritems():
             messages.error(request, error, extra_tags=tag)
-        return redirect('/edit_user')
+        return redirect('/users/{}'.format(request.session['id']))
     a = User.objects.get(id=request.session['id'])
     a.name = request.POST['name']
     a.email = request.POST['email']
@@ -93,7 +93,7 @@ def edit_pw_process(request):
     if len(errors):
         for tag, error in errors.iteritems():
             messages.error(request, error, extra_tags=tag)
-        return redirect('/edit_user')
+        return redirect('/users/{}'.format(request.session['id']))
     a = User.objects.get(id=request.session['id'])
     hp = bcrypt.hashpw(request.POST['new_pw'].encode(), bcrypt.gensalt())
     a.password = hp
@@ -102,7 +102,7 @@ def edit_pw_process(request):
 
 def edit_profile_pic_process(request):
     if request.method !="POST":
-        return redirect('/edit_user')
+        return redirect('/users/{}'.format(request.session['id']))
     a = User.objects.get(id=request.session['id'])
     print request.FILES
     if 'prof_pic' in request.FILES:
@@ -110,7 +110,7 @@ def edit_profile_pic_process(request):
         a.save()
     else:
         messages.error(request, "No Photo Uploaded!")
-        return redirect('/edit_user')
+        return redirect('/users/{}'.format(request.session['id']))
     return redirect('/main')
 
 def manage_users(request):
@@ -165,11 +165,20 @@ def users(request, id):
     if not 'id' in request.session:
         return redirect('/')
     user = User.objects.get(id=id)
+    me = User.objects.get(id=request.session['id'])
+    if Chat.objects.filter(messengers__in=[user, me]).first() == None:
+        new_chat = Chat.objects.create()
+        new_chat.messengers.add(user, me)
+        new_chat.save()
+    chatroom = Chat.objects.filter(messengers__in=[user, me]).first()
+    print chatroom.chats_messages.all()
     context={
         'my_plans_exclude': Plan.objects.filter(host_id=request.session['id']).exclude(members__id=user.id),
         'my_plans_include': Plan.objects.filter(Q(host_id=request.session['id']) & Q(members__id=user.id)),
         'user': user,
-        'portfolio': User.objects.get(id=id).uploaded_photos.all(),
+        'logged_user': User.objects.get(id=request.session['id']),
+        'portfolio': User.objects.get(id=id).uploaded_photos.all(), 
+        'chatroom' : chatroom,
     }
     return render(request, 'ports/users.html', context)
 
@@ -180,10 +189,10 @@ def add_photo_process(request, id):
     if len(errors):
         for tag, error in errors.iteritems():
             messages.error(request, error, extra_tags=tag)
-        return redirect('/edit_user')  
+        return redirect('/users/{}'.format(id))  
     a = Photo.objects.create(image=request.FILES['portfolio_pic'], title=request.POST['title'],uploader=User.objects.get(id=id))
     user_id = User.objects.get(id=id).id
-    return redirect('/portfolio/{}'.format(id))
+    return redirect('/users/{}'.format(id))
 
 def add_profile_pic_process(request, id):
     if request.method !="POST":
@@ -202,6 +211,7 @@ def photo(request, id):
         return redirect('/')
     photo = Photo.objects.get(id=id)
     context={
+        'logged_user': User.objects.get(id=request.session['id']),
         'photo': photo,
     }
     return render(request, 'ports/photo.html', context)
@@ -227,7 +237,7 @@ def show_plan(request, id):
     if not 'id' in request.session:
         return redirect('/')
     context = {
-        'user' : User.objects.get(id=request.session['id']),
+        'logged_user' : User.objects.get(id=request.session['id']),
         'plan' : Plan.objects.get(id=id),
     }
     return render(request, 'ports/show_plan.html', context)
@@ -298,7 +308,7 @@ def show_group(request, id):
     if not 'id' in request.session:
         return redirect('/')
     context={
-        'user': User.objects.get(id=request.session['id']),
+        'logged_user': User.objects.get(id=request.session['id']),
         'group': Group.objects.get(id=id),
     }
     return render(request, 'ports/show_group.html', context)
@@ -344,6 +354,17 @@ def remove_groupmember(request,group_id,user_id):
     this_group.members.remove(this_user)
     this_group.save()
     return redirect('/groups/'+group_id)
+
+def add_message(request, user_id):
+    if request.method !="POST":
+        return redirect('/users/'+user_id)
+    me = User.objects.get(id=request.session['id'])
+    other_user = User.objects.get(id=user_id)
+    this_chatroom = Chat.objects.filter(messengers__in=[me, other_user]).first()
+    print this_chatroom.chats_messages
+    new_message = Message.objects.create(message=request.POST['message'], author=me, chatroom=this_chatroom)
+    new_message.save()
+    return redirect('/users/'+user_id)
 
 def log_out(request):
     if 'id' in request.session:

@@ -1,140 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login/Registration</title>
+    <title>piCSell | Login/Registration</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-inverse fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">piCSell</a>
+                <button class="navbar-toggler btn btn-default" type="button" data-toggle="collapse" data-target="#myNavbar" aria-controls="myNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon glyphicon glyphicon-menu-hamburger"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-item nav-link" href="/">Home
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="nav-item nav-link" href="/start">
+                            <span class="glyphicon glyphicon-log-in"></span> Login/Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid wat">
+        <div class="row content justify-content-center">
+            <div id="main-body" class="col col-sm text-center row justify-content-center main-content-index">
+                <div class="row col-sm-6 justify-content-center border border-dark" id="login-register">
+                    <div class="border-bottom border-dark row col-sm-12 fixed" id="login-register-head">
+                        <a href="#" id="register-link" class="col active">
+                            <h1>Register</h1>
+                        </a>
+                        <a href="#" id="login-link" class="col">
+                            <h1>Login</h1>
+                        </a>
+                    </div>
+                    <div class="row col-sm-12">
+                        <div class="error">
+                            {% if messages %} {% for message in messages %}
+                            <p{%if message.tags %} class="{{message.tags}}" {% endif %}>{{message}}</p>
+                                {% endfor %} {% endif %}
+                        </div>
+                        <div class="text-error">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 justify-content-center text-left row" id="register-form">
+                        <!-- add-form -->
+                        <form action="process/reg" method='post' enctype="multipart/form-data" class="form-horizontal">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="name">Name:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="name" placeholder="Name" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="username">Username:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="username" placeholder="Username" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="email">Email:</label>
+                                <div class="col-sm-6">
+                                    <input type="email" name="email" placeholder="Email" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="bday">Birthday:</label>
+                                <div class="col-sm-6">
+                                    <input type="date" name="bday" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="address">Address:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="address" placeholder="Address" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="city">City:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="city" placeholder="City" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="state">State:</label>
+                                <div class="col-sm-6">
+                                    <select type="text" name="state" class="form-control">
+                                        {% for state in all_states %} {% if state == 'CA'%}
+                                        <option value="{{state}}" label="{{state}}" selected/> {% else %}
+                                        <option value="{{state}}" label="{{state}}" /> {% endif %} {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="zipcode">Zipcode:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" name="zipcode" placeholder="ZipCode" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="pw">Password:</label>
+                                <div class="col-sm-6">
+                                    <input type="password" name="pw" placeholder="password" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="pw_confirm">Confirm PW:</label>
+                                <div class="col-sm-6">
+                                    <input type="password" name="pw_confirm" placeholder="Confirm Password" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="position">Position:</label>
+                                <div class="col-sm-6">
+                                    <select required="required" name="position" class="form-control">
+                                        <option value="1">Photographer</option>
+                                        <option value="2">Model</option>
+                                        <option value="3">Client</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="prof_pic">Profile Picture:</label>
+                                <div class="col-sm-6">
+                                    <input type="file" name="prof_pic" id="form_prof_pics" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-4">
+                                    <button class="btn btn-default" type="submit">Register</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- login form -->
+                    <div class="col-sm-12 text-left row justify-content-center" id="login-form">
+                        <form action="process/login" method='post' class="form-horizontal">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="username">Username:</label>
+
+                                <div class="col-sm-6">
+                                    <input type="text" name="username" placeholder="Username" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="pw">Password:</label>
+
+                                <div class="col-sm-6">
+                                    <input type="password" name="pw" placeholder="Password" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-4">
+                                    <button class="btn btn-default" type="submit">Login</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="container-fluid text-center index-footer row">
+        <p>&#169; Jeffrey Ahn</p>
+    </footer>
     <!-- Latest compiled jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="{% static 'ports/css/bootstrap.css' %}">
     <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <script src="{% static 'ports/js/bootstrap.js' %}"></script>
     <link rel="stylesheet" href="{% static 'ports/css/style.css' %}">
-    <script type="text/javascript" src="{% static 'ports/js/app.js' %}"></script>
-</head>
-<body>
-    <div class="container-fluid wrapper" id="tupac">
-        <!-- Adding main logo and company name -->
-        <div class="main_header">
-            <p class="head_logo">piCSell</p>
-            <!-- add images and other cool things  -->
-            <a href="/">Home</a>
-            <a href="/start">Login/Register</a>
-        </div>
-        <!-- add errors if they exist -->
-        <div class="error">
-            {% if messages %}
-            <ul id="messages">
-                {% for message in messages %}
-                <li{%if message.tags %} class = "{{message.tags}}"{% endif %}>{{message}}</li>
-                {% endfor %}
-            </ul>  
-            {% endif %}
-        </div>
-        <div class="text-error">
-
-        </div>
-        <h2>Register</h2>
-        <!-- add-form -->
-        <form action="process/reg" method='post' enctype="multipart/form-data">
-            {% csrf_token %}
-            <table>
-                <tr>
-                    <td>Name:</td>
-                    <td><input type="text" name="name" placeholder="Name"></td>
-                </tr>
-                <tr>
-                    <td>Username: </td>
-                    <td><input type="text" name="username"  placeholder="Username"></td>
-                </tr>
-                <tr>
-                    <td>Email: </td>
-                    <td><input type="email" name="email"  placeholder="Email"></td>
-                </tr>                
-                <tr>
-                    <td>Birthday: </td>
-                    <td><input type="date" name="bday"></td>
-                </tr>
-                <tr>
-                    <td>Address: </td>
-                    <td><input type="text" name="address"  placeholder="Address"></td>
-                </tr>
-                <tr>
-                    <td>City: </td>
-                    <td><input type="text" name="city" placeholder="City"></td>
-                </tr>
-                <tr>
-                    <td>State: </td>
-                    <td>
-                        <select type="text" name="state">
-                            {% for state in all_states %}
-                                {% if state == 'CA'%} 
-                                    <option value="{{state}}" label="{{state}}" selected/>
-                                {% else %}
-                                    <option value="{{state}}" label="{{state}}"/>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr> 
-                <tr>
-                    <td>Zipcode: </td>
-                    <td><input type="text" name="zipcode"  placeholder="ZipCode"></td>
-                </tr>                                 
-                <tr>
-                    <td>Password: </td>
-                    <td><input type="password" name="pw" placeholder="password"></td>
-                    <td>*Password should be at least 8 characters</td>
-                </tr>
-                <tr>
-                    <td>Confirm Pw:</td>
-                    <td><input type="password" name="pw_confirm" placeholder="Confirm Password"></td>
-                </tr>
-                <tr>
-                    <td>Position:</td>
-                    <td>
-                        <select required="required" name="position">
-                            <option value="1">Photographer</option>
-                            <option value="2">Model</option>
-                            <option value="3">Client</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Profile Picture:</td>
-                    <td>
-                        <input type="file" name="prof_pic" id="form_prof_pics">
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><button type="submit">Register</button></td>
-                </tr>
-            </table>
-        </form>
-        <!-- login form -->
-        <h2>Login</h2>
-        <form action="process/login" method='post'>
-            {% csrf_token %}
-            <table>
-                <tr>
-                    <td>Username:</td>
-                    <td><input type="text" name="username" placeholder="Username"></td>
-                </tr>
-                <tr>
-                    <td>Password:</td>
-                    <td><input type="password" name="pw" placeholder="Password"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><button type="submit">Login</button></td>
-                </tr>
-            </table>
-        </form>
-    </div>
+    <script src="{% static 'ports/js/app.js' %}"></script>
 </body>
+
 </html>
