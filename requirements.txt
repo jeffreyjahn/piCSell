@@ -1,0 +1,15 @@
+bcrypt==3.1.4
+cffi==1.11.5
+Django==1.11.12
+django-appconf==1.0.2
+django-debug-toolbar==1.9.1
+django-imagekit==4.0.2
+django-localflavor==2.0
+pilkit==2.0
+Pillow==5.1.0
+pycparser==2.18
+pytz==2018.4
+pyzipcode-cli==0.1.4
+requests==2.9.1
+six==1.11.0
+uszipcode==0.1.3
