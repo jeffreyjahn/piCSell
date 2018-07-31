@@ -177,13 +177,13 @@ class User(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
-    profile_pic = models.ImageField(upload_to=user_directory_path_profile)
+    profile_pic = models.ImageField()
     profile_pic_thumb = ImageSpecField(source = 'profile_pic', processors=[ResizeToFill(300, 299)], format='JPEG', options={'quality':100})
     
     objects = MainManager()
     
 class Photo(models.Model):
-    image = models.ImageField(upload_to=user_directory_path)
+    image = models.ImageField()
     image_thumb = ImageSpecField(source = 'image', processors=[ResizeToFill(600, 400)], format='JPEG', options={'quality':100})
     image_port = ImageSpecField(source = 'image', processors=[ResizeToFill(1200, 800)], format='JPEG', options={'quality':100})
     title = models.CharField(max_length = 255, null=True)

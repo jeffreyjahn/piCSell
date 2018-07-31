@@ -312,7 +312,7 @@
                 <div class="portfolio_items row container-fluid">
                     <h3 class="col-sm-12 text-center">{{user.username}}'s Portfolio</h3>
                     {% for photo in portfolio %}
-                        <a class= "col-sm-4" href="/photo/{{photo.id}}"  data-toggle="modal" data-target="#photo-modal-{{photo.id}}"><img class="portfolio_item col-sm-12" src="{{photo.image_thumb.url}}"></a>
+                        <a class= "col-sm-4" href="/photo/{{photo.id}}"  data-toggle="modal" data-target="#photo-modal-{{photo.id}}"><img class="portfolio_item col-sm-12" src="{{photo.image.url}}"></a>
                     {% endfor%}
                 </div>
             </div>
