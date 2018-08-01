@@ -10,6 +10,7 @@ import bcrypt
 allStates=["AL", "AK", "AR", "AZ", "CA","CO","CT","DE","FL","GA","HI","IA","ID","IL","IN","KS","KY","LA","MA","ME","MD","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VA","VT","WA","WI","WV","WY"]
 # Create your views here.
 def index(request):
+    print("In the index method")
     if 'id' in request.session:
         redirect('/main')
     return render(request, 'ports/index.html')
@@ -69,6 +70,7 @@ def main(request):
         'my_groups': Group.objects.filter(members__id=request.session['id']),
         'all_states': allStates,
     }
+    print('Got to right before render')
     return render(request, 'ports/main.html', context)
 
 def edit_user_process(request):
