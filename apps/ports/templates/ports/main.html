@@ -54,8 +54,8 @@
                 {% else %}
                 <h1 id="main-username" class="primary-color text-center col-sm">{{user.username}} </h1>
                 <a href="/users/{{user.id}}">
-                {% if user.profile_pic_thumb %}
-                    <img src="{{user.profile_pic_thumb.url}}" class="profile_pic"> {% else %}
+                {% if user.profile_pic %}
+                    <img src="{{user.profile_pic.url}}" class="profile_pic"> {% else %}
                     <img src="{% static 'ports/images/default_profile.jpg' %}" class="profile_pic"> {% endif %}
                 </a>
                 <ul class="navbar-primary-menu col-sm-10 justify-content-center">
