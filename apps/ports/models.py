@@ -160,9 +160,9 @@ class MainManager(models.Manager):
         return errors 
 
 def user_directory_path(instance, filename):
-    return '{0}user_{1}/{2}_{3}'.format(settings.MEDIA_URL,instance.uploader.id, filename, uuid.uuid4())
+    return 'user_{1}/{2}_{3}'.format(instance.uploader.id, uuid.uuid4(), filename)
 def user_directory_path_profile(instance, filename):
-    return '{0}user_{1}/{2}_{3}'.format(settings.MEDIA_URL, instance.id, filename, uuid.uuid4())
+    return 'user_{1}/{2}_{3}'.format(instance.id, uuid.uuid4(), filename)
 
 class User(models.Model):
     name = models.CharField(max_length = 255)
@@ -178,12 +178,12 @@ class User(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
-    profile_pic = models.ImageField()
+    profile_pic = models.ImageField(upload_to=user_directory_path_profile)
     
     objects = MainManager()
     
 class Photo(models.Model):
-    image = models.ImageField()
+    image = models.ImageField(upload_to=user_directory_path)
     title = models.CharField(max_length = 255, null=True)
     description = models.TextField(max_length = 500, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
