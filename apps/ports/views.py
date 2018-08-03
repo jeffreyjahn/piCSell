@@ -70,6 +70,7 @@ def main(request):
         'groups':Group.objects.exclude(members__id=request.session['id']),
         'my_groups': Group.objects.filter(members__id=request.session['id']),
         'all_states': allStates,
+        'users': User.objects.exclude(id=request.session['id']),
     }
     print('Got to right before render')
     return render(request, 'ports/main.html', context)

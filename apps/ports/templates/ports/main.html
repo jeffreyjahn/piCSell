@@ -200,6 +200,37 @@
                         </div>
                     </form>
                 </div>
+                <h3 id="plans">See Users</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>City</th>
+                            <th>State</th>
+                        </tr>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <a href="/users/{{ user.id }}">{{ user.name }}</a>
+                            </td>
+                            <td>
+                                {% if user.user_level == 1 %}
+                                Photographer
+                                {% elif user.user_level == 2 %}
+                                Model
+                                {% elif user.user_level == 3 %}
+                                Client
+                                {% else %}
+                                Admin
+                                {% endif %}
+                            </td>
+                            <td>{{ user.city }}</td>
+                            <td>{{ user.state }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
                 <!-- group shiz -->
                 <div class="main-show col-sm-12">
                     <h3 id="groups">See Groups</h3>
