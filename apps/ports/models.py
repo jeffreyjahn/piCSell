@@ -11,6 +11,7 @@ import os
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 import requests, json
+from portscourt import settings
 # Create your models here.
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]+$')
 

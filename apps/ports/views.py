@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.db.models import Q
 from models import *
 import bcrypt
+from portscourt import settings
 
 allStates=["AL", "AK", "AR", "AZ", "CA","CO","CT","DE","FL","GA","HI","IA","ID","IL","IN","KS","KY","LA","MA","ME","MD","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VA","VT","WA","WI","WV","WY"]
 # Create your views here.
@@ -372,3 +373,7 @@ def log_out(request):
     if 'id' in request.session:
         request.session.clear()
     return redirect('/')
+
+def guest_login(request):
+    request.session['id'] = User.objects.get(username='jeffreyahn').id
+    return redirect('/main')
