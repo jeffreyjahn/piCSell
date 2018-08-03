@@ -42,7 +42,7 @@ def process(request, action):
             my_position = int(request.POST['position'])
         except User.DoesNotExist:
             my_position = 9
-        curr = User.objects.create(name=request.POST['name'], username=request.POST['username'], email=request.POST['email'], password=hp, birthday=my_bday, user_level=my_position, zipcode=request.POST['zipcode'],city=request.POST['city'], state=request.POST['state'])
+        curr = User.objects.create(name=request.POST['name'], username=request.POST['username'], email=request.POST['email'], password=hp, birthday=my_bday, user_level=my_position, address=request.POST['address'], zipcode=request.POST['zipcode'],city=request.POST['city'], state=request.POST['state'])
         request.session['id'] = curr.id
     else:
         errors = User.objects.login_validator(request.POST)
@@ -57,7 +57,6 @@ def main(request):
     if not 'id' in request.session:
         return redirect('/')
     user = User.objects.get(id=request.session['id'])
-    my_bday = user.birthday.strftime("%Y-%m-%d")
     context = {
         'user' : user,
         'bday' : my_bday,
@@ -86,6 +85,11 @@ def edit_user_process(request):
     a = User.objects.get(id=request.session['id'])
     a.name = request.POST['name']
     a.email = request.POST['email']
+    a.address = request.POST['address']
+    a.city = request.POST['city']
+    a.zipcode =request.POST['zipcode']
+    a.state = request.POST['state']
+    a.user_level = request.POST['position']
     a.birthday = datetime.strptime(request.POST['bday'], "%Y-%m-%d").date()
     a.save()
     return redirect('/main')
@@ -169,6 +173,7 @@ def users(request, id):
     if not 'id' in request.session:
         return redirect('/')
     user = User.objects.get(id=id)
+    user_bday = user.birthday.strftime("%Y-%m-%d")
     me = User.objects.get(id=request.session['id'])
     if Chat.objects.filter(messengers__in=[user, me]).first() == None:
         new_chat = Chat.objects.create()
@@ -180,6 +185,7 @@ def users(request, id):
         'my_plans_exclude': Plan.objects.filter(host_id=request.session['id']).exclude(members__id=user.id),
         'my_plans_include': Plan.objects.filter(Q(host_id=request.session['id']) & Q(members__id=user.id)),
         'user': user,
+        'bday': user_bday,
         'logged_user': User.objects.get(id=request.session['id']),
         'portfolio': User.objects.get(id=id).uploaded_photos.all(), 
         'chatroom' : chatroom,
@@ -240,9 +246,12 @@ def new_plan(request):
 def show_plan(request, id):
     if not 'id' in request.session:
         return redirect('/')
+    this_plan = Plan.objects.get(id=id)
+    plan_date = this_plan.date.strftime("%Y-%m-%d")
     context = {
         'logged_user' : User.objects.get(id=request.session['id']),
         'plan' : Plan.objects.get(id=id),
+        'plan_date':plan_date,
     }
     return render(request, 'ports/show_plan.html', context)
     

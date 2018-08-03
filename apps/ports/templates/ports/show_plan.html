@@ -101,7 +101,7 @@
                     <!-- edit-form -->
                     {% if plan.host.id == request.session.id %}
                     <h3>Edit Plan</h3>
-                    <form action="/plans/new" method='post'>
+                    <form action="/plans/{{plan.id}}/edit" method='post'>
                         {% csrf_token %}
                         <table>
                             <tr>
@@ -114,7 +114,7 @@
                             </tr>                
                             <tr>
                                 <td>Date: </td>
-                                <td><input type="datetime-local" name="date" value="{{curr_date}}"></td>
+                                <td><input type="datetime-local" name="date" value="{{plan_date}}"></td>
                             </tr>
                             <tr>
                                 <td>Zipcode: </td>
