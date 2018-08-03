@@ -59,7 +59,6 @@ def main(request):
     user = User.objects.get(id=request.session['id'])
     context = {
         'user' : user,
-        'bday' : my_bday,
         'photographers': User.objects.filter(Q(user_level=1) & ~Q(id=request.session['id'])),
         'models': User.objects.filter(Q(user_level=2) & ~Q(id=request.session['id'])),
         'clients': User.objects.filter(Q(user_level=3) & ~Q(id=request.session['id'])),
