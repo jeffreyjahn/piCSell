@@ -41,6 +41,7 @@
                     <a href="#jeff-carousel" class="btn btn-default">Info</a>
                     <a href="/start" class="btn btn-default">Login/Register</a>
                     <form action="/guest" method="post">
+                        {% csrf_token %}
                         <input class ="btn btn-default" type="submit" value="Login as Guest">
                     </form>
                 </div>

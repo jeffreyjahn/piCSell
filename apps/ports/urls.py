@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^groups/leave/(?P<id>\d+)$', views.leave_group),
     url(r'^groups/remove/(?P<group_id>/d+)/(?P<user_id>/d+)$', views.remove_groupmember),
     url(r'^chats/add_message/(?P<user_id>\d+)$', views.add_message),
-    url(r'^guest$', views.guest_login)
+    url(r'^guest$', views.guest_login),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
